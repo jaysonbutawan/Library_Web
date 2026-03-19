@@ -13,12 +13,17 @@
 
     <div class="flex items-center space-x-4">
       <button
+        type="button"
+        (click)="toggleModal()"
         class="flex items-center space-x-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-600/20 transition-all font-bold text-sm"
       >
         <i class="pi pi-plus"></i>
         <span>Add New Book</span>
       </button>
     </div>
+    @if (isModalOpen) {
+      <app-addbook-modal (close)="toggleModal()"></app-addbook-modal>
+    }
   </div>
 
   <div
@@ -60,13 +65,9 @@
         <button
           class="flex-1 h-full rounded-lg text-slate-400 hover:text-white text-xs font-bold transition-all"
         >
-          Reserved
+          Borrowed
         </button>
-        <button
-          class="flex-1 h-full rounded-lg text-slate-400 hover:text-white text-xs font-bold transition-all"
-        >
-          Offline
-        </button>
+      
       </div>
     </div>
 
@@ -147,10 +148,11 @@
               </div>
             </td>
             <td class="px-8 py-6 text-right">
-              <button 
-              type="button"
+              <button
+                type="button"
                 aria-label="More options"
-              class="text-slate-500 hover:text-white transition-colors p-2">
+                class="text-slate-500 hover:text-white transition-colors p-2"
+              >
                 <i class="pi pi-ellipsis-v"></i>
               </button>
             </td>

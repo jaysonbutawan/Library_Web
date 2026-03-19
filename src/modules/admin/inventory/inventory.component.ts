@@ -1,18 +1,18 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule, NgClass } from "@angular/common";
-import { FormsModule } from "@angular/forms"; // Import FormsModule for [(ngModel)]
+import { FormsModule } from "@angular/forms"; 
 import { BookAsset } from "./inventory.component.dto";
+import { AddbookModalComponent } from "./modal/addbook-modal.component";
 
 @Component({
   selector: "app-inventory",
   standalone: true,
-  imports: [CommonModule, NgClass, FormsModule],
+  imports: [CommonModule, NgClass, FormsModule, AddbookModalComponent],
   templateUrl: "./inventory.component.html",
 })
 export class InventoryComponent implements OnInit {
   searchTerm: string = '';
   
-  // Original Data (Source of Truth)
   allBooks: BookAsset[] = [
     {
       id: '1',
@@ -40,7 +40,6 @@ export class InventoryComponent implements OnInit {
     }
   ];
 
-  // This is what we loop through in the HTML
   filteredBooks: BookAsset[] = [];
 
   ngOnInit() {
@@ -66,5 +65,11 @@ export class InventoryComponent implements OnInit {
   getAvailabilityControl(book: BookAsset): number {
   if (!book || !book.total_copies) return 0;
   return (book.available_copies / book.total_copies) * 100;
+}
+
+isModalOpen = false;
+
+toggleModal() {
+  this.isModalOpen = !this.isModalOpen;
 }
 }

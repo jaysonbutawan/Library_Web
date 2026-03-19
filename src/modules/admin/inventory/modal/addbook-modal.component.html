@@ -1,0 +1,137 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-[#0b0c12]/60 backdrop-blur-sm p-4 animate-in fade-in duration-300"
+>
+  <div
+    class="bg-[#11141d] w-full max-w-2xl rounded-4xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-in zoom-in-95 duration-300"
+  >
+    <div class="p-8 pb-0 flex justify-between items-start">
+      <div>
+        <h2 class="text-2xl font-bold text-white tracking-tight">Register New Book</h2>
+        <p class="text-slate-500 text-sm mt-1">Add secure asset record to library inventory</p>
+      </div>
+      <button
+        (click)="onClose()"
+        type="button"
+        aria-label="Close modal"
+        class="text-slate-500 hover:text-white transition-colors p-2"
+      >
+        <i class="pi pi-times text-xl"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="registerForm" class="p-8 space-y-6">
+      <div class="grid grid-cols-2 gap-6">
+        <div class="space-y-2">
+          <label
+            for="bookTitle"
+            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+            >Book Title</label
+          >
+          <input
+            id="bookTitle"
+            type="text"
+            formControlName="title"
+            placeholder="e.g. The Iron Protocol"
+            class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label
+            for="leadAuthor"
+            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+            >Lead Author</label
+          >
+          <input
+            id="leadAuthor"
+            type="text"
+            formControlName="author"
+            placeholder="e.g. Marcus Thorne"
+            class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label
+            for="isbn"
+            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+            >ISBN Reference</label
+          >
+          <input
+            id="isbn"
+            type="text"
+            formControlName="isbn"
+            placeholder="ISBN-978-0-..."
+            class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label
+            for="classification"
+            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+            >Category</label
+          >
+          <div class="relative">
+            <select
+              id="classification"
+              formControlName="category"
+              class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer"
+            >
+              <option value="Philosophy">Philosophy</option>
+              <option value="Technology">Technology</option>
+            </select>
+            <i
+              class="pi pi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-xs"
+            ></i>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label
+            for="year"
+            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+            >Publication Year</label
+          >
+          <input
+            id="year"
+            type="text"
+            formControlName="year"
+            placeholder="2024"
+            class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label
+            for="totalCopies"
+            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+            >Total Stock</label
+          >
+          <input
+            id="totalCopies"
+            type="number"
+            formControlName="total_copies"
+            placeholder="e.g. 20"
+            class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all"
+          />
+        </div>
+      </div>
+    </form>
+
+    <div class="p-8 bg-white/2 border-t border-white/5 flex justify-end items-center space-x-6">
+      <button
+        (click)="onClose()"
+        class="text-sm font-bold text-slate-500 hover:text-white transition-colors hover:"
+      >
+        Discard
+      </button>
+      <button
+        class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-xl font-bold flex items-center space-x-2 shadow-lg shadow-indigo-600/20 active:scale-95 transition-all"
+      >
+        <i class="pi pi-check-circle"></i>
+        <span>Add</span>
+      </button>
+    </div>
+  </div>
+</div>

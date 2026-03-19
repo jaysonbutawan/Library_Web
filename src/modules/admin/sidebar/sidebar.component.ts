@@ -9,21 +9,5 @@ import { CommonModule } from '@angular/common';
   templateUrl: './sidebar.component.html',
 })
 export class SidebarComponent {
-//   isCollapsed = false;
-//   isReportsOpen = false;
 
-//   constructor(private router: Router) {}
-
-//   isReportsActive(): boolean {
-//     return this.router.url.includes('field-reports');
-//   }
-
-//   toggleSidebar() {
-//     this.isCollapsed = !this.isCollapsed;
-//     if (this.isCollapsed) this.isReportsOpen = false;
-//   }
-
-//   toggleReports() {
-//     this.isReportsOpen = !this.isReportsOpen;
-//   }
 }
