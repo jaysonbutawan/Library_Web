@@ -16,14 +16,9 @@ export class LoginComponent {
     password: new FormControl('', [Validators.required])
   });
 
-  onSubmit() {
-    if (this.loginForm.valid) {
-      console.log('Form Submitted', this.loginForm.value);
-      
-      this.router.navigate(['/dashboard']);
-    } else {
-     
-      console.error('Form is invalid');
-    }
+ onSubmit() {
+  if (this.loginForm.valid) {
+    this.router.navigate(['/admin/inventory']);
   }
+}
 }

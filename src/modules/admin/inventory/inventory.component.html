@@ -1,0 +1,59 @@
+<section class="space-y-8 animate-in fade-in duration-500">
+  <div class="flex justify-between items-end">
+    <div>
+      <span class="inline-block px-3 py-1 rounded-full bg-indigo-600/10 text-indigo-400 text-[10px] font-bold uppercase tracking-widest mb-4 border border-indigo-600/20">
+        Inventory Monitoring Active
+      </span>
+      <h1 class="text-4xl font-bold">Book Inventory</h1>
+      <p class="text-slate-500 mt-2">Manage {{ totalRecords }} encrypted asset records.</p>
+    </div>
+    </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    @for (book of books; track book.id) {
+      <div class="bg-white/5 border border-white/10 p-6 rounded-3xl group hover:bg-white/10 transition-all cursor-pointer">
+        <div [class]="'aspect-3/4 rounded-xl mb-6 relative overflow-hidden ' + book.coverColor">
+          @if (book.isActive) {
+            <span class="absolute top-3 left-3 px-2 py-1 bg-indigo-600 text-[10px] font-bold rounded">ACTIVE</span>
+          }
+        </div>
+        <p class="text-[10px] text-indigo-400 font-bold uppercase">{{ book.classification }}</p>
+        <h3 class="text-lg font-bold mt-1">{{ book.title }}</h3>
+      </div>
+    }
+
+    <div class="border-2 border-dashed border-white/10 rounded-3xl flex flex-col items-center justify-center p-10 text-center hover:border-indigo-500/50 transition-colors cursor-pointer">
+       <i class="pi pi-plus-circle text-indigo-400 text-2xl mb-4"></i>
+       <h4 class="font-bold">Register New Volume</h4>
+    </div>
+  </div>
+
+  <div class="bg-white/5 border border-white/10 rounded-3xl overflow-hidden">
+    <table class="w-full text-left">
+      <thead class="text-[10px] uppercase text-slate-500 tracking-widest border-b border-white/5">
+        <tr>
+          <th class="px-6 py-4">Asset Reference</th>
+          <th class="px-6 py-4">Secure ID / ISBN</th>
+          <th class="px-6 py-4 text-center">Integrity Status</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/5 text-sm">
+        @for (book of books; track book.id) {
+          <tr class="hover:bg-white/5 transition-colors">
+            <td class="px-6 py-4 font-medium">{{ book.title }}</td>
+            <td class="px-6 py-4 text-slate-400 font-mono text-xs">{{ book.isbn }}</td>
+            <td class="px-6 py-4 text-center">
+              <span [ngClass]="{
+                'bg-green-500/10 text-green-500': book.status === 'AVAILABLE',
+                'bg-amber-500/10 text-amber-500': book.status === 'RESERVED',
+                'bg-red-500/10 text-red-500': book.status === 'OFFLINE'
+              }" class="px-3 py-1 rounded-full text-[10px] font-bold">
+                {{ book.status }}
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

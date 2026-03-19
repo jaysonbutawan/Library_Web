@@ -1,0 +1,25 @@
+<div class="flex min-h-screen bg-[#0b0c12] text-white">
+  <app-sidebar></app-sidebar>
+
+  <main class="ml-64 grow flex flex-col">
+    <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 bg-[#0d0f17]/50 backdrop-blur-md sticky top-0 z-10">
+      <div class="relative w-96">
+        <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+        <input type="text" placeholder="Search secure database..." 
+               class="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-12 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500">
+      </div>
+      
+      <div class="flex items-center space-x-6">
+        <i class="pi pi-bell text-slate-400 cursor-pointer"></i>
+        <i class="pi pi-cog text-slate-400 cursor-pointer"></i>
+        <div class="w-10 h-10 rounded-full border border-white/10 overflow-hidden">
+          <img src="assets/admin-avatar.jpg" alt="Admin">
+        </div>
+      </div>
+    </header>
+
+    <div class="p-8">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>
