@@ -1,37 +1,70 @@
-import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
+import { CommonModule, NgClass } from "@angular/common";
+import { FormsModule } from "@angular/forms"; // Import FormsModule for [(ngModel)]
 import { BookAsset } from "./inventory.component.dto";
-
 
 @Component({
   selector: "app-inventory",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgClass, FormsModule],
   templateUrl: "./inventory.component.html",
 })
-export class InventoryComponent {
-    books: BookAsset[] = [
+export class InventoryComponent implements OnInit {
+  searchTerm: string = '';
+  
+  // Original Data (Source of Truth)
+  allBooks: BookAsset[] = [
     {
       id: '1',
       title: 'The Architecture of Reason',
-      classification: 'Philosophy',
+      category: 'Philosophy',
+      author: 'Elena Kostas',
       isbn: 'ISBN-978-3-16-148418-8',
+      total_copies: 10,
+      available_copies: 5,
       status: 'AVAILABLE',
       isActive: true,
       coverColor: 'bg-amber-100'
     },
     {
       id: '2',
-      title: 'Visions of the Voids',
-      classification: 'Digital Art',
+      title: 'Visions of the Void',
+      category: 'Digital Art',
+      author: 'Marcus Thorne',
       isbn: 'ISBN-978-0-12-345678-9',
+      total_copies: 25,
+      available_copies: 2,
       status: 'RESERVED',
       isActive: false,
       coverColor: 'bg-emerald-100'
     }
   ];
 
-  get totalRecords(): string {
-    return this.books.length.toLocaleString();
+  // This is what we loop through in the HTML
+  filteredBooks: BookAsset[] = [];
+
+  ngOnInit() {
+    this.filteredBooks = this.allBooks;
   }
+
+  onSearch() {
+    const term = this.searchTerm.toLowerCase().trim();
+    if (!term) {
+      this.filteredBooks = this.allBooks;
+      return;
+    }
+
+    this.filteredBooks = this.allBooks.filter(book => 
+      book.title.toLowerCase().includes(term) || 
+      book.author.toLowerCase().includes(term)
+    );
+  }
+
+  get totalRecords(): string {
+    return this.filteredBooks.length.toLocaleString();
+  }
+  getAvailabilityControl(book: BookAsset): number {
+  if (!book || !book.total_copies) return 0;
+  return (book.available_copies / book.total_copies) * 100;
+}
 }
