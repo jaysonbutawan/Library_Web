@@ -1,13 +1,41 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../admin/sidebar/sidebar.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'admin-layout',
-  standalone: true,
-  imports: [RouterOutlet, SidebarComponent],
-  templateUrl: './layout.components.html',
+    selector: 'admin-layout',
+    standalone: true,
+    imports: [CommonModule, RouterOutlet, SidebarComponent],
+    templateUrl: './layout.components.html',
 })
 export class LayoutComponent {
-    
+    isMobileMenuOpen = false;
+    private touchStartX = 0;
+
+    toggleMobileMenu() {
+        this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    }
+
+    swipeStart(event: TouchEvent) {
+        this.touchStartX = event.changedTouches[0].screenX;
+    }
+
+    swipeEnd(event: TouchEvent) {
+        const touchEndX = event.changedTouches[0].screenX;
+        if (this.touchStartX - touchEndX > 50) {
+            this.isMobileMenuOpen = false;
+        }
+    }
+
+    @HostListener('window:keydown.escape', ['$event'])
+    handleKeyDown(event: any) {
+        if (this.isMobileMenuOpen) {
+            this.isMobileMenuOpen = false;
+        }
+    }
+
+    closeMenu(): void {
+    this.isMobileMenuOpen = false;
+  }
 }

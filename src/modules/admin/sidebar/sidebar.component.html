@@ -1,66 +1,44 @@
-<aside class="w-64 h-screen bg-[#0d0f17] border-r border-white/5 flex flex-col p-6 fixed">
-  <div class="flex items-center space-x-3 mb-10">
-    <div
-      class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20"
-    >
+<aside class="w-full h-full bg-[#0d0f17] border-r border-white/5 flex flex-col p-6 overflow-y-auto">
+  
+  <div class="flex items-center space-x-3 mb-10 group cursor-pointer">
+    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20 group-hover:scale-110 transition-transform duration-300">
       <i class="pi pi-building text-white text-xl"></i>
     </div>
     <div>
-      <h2 class="text-white font-bold leading-tight">The Vault</h2>
+      <h2 class="text-white font-bold leading-tight group-hover:text-indigo-400 transition-colors">The Vault</h2>
       <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">Security Suite</p>
     </div>
   </div>
 
-  <nav class="grow space-y-2">
-    <a
-      routerLink="/dashboard"
-      class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 transition-all"
-    >
-      <i class="pi pi-grid"></i> <span>Dashboard</span>
-    </a>
-
-    <a
-      routerLink="/circulation"
-      class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5"
-    >
-      <i class="pi pi-users"></i> <span>Circulation</span>
-    </a>
-    <a
-      routerLink="/admin-inventory"
-      routerLinkActive="bg-indigo-600/10 text-indigo-400 border border-indigo-600/20"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 transition-all"
-    >
-      <i class="pi pi-book"></i>
-      <span>Inventory</span>
-    </a>
-
-    <a
-      routerLink="/students"
-      class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5"
-    >
-      <i class="pi pi-users"></i> <span>Students</span>
-    </a>
-
-    <a
-      routerLink="/clearance"
-      class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 transition-all"
-    >
-      <i class="pi pi-users"></i> <span>Clearance</span>
-    </a>
-    <a
-      routerLink="/staff"
-      class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 transition-all"
-    >
-      <i class="pi pi-users"></i> <span>Staff</span>
-    </a>
+  <nav class="grow space-y-1.5">
+    <ng-container *ngTemplateOutlet="navItem; context: { link: '/dashboard', icon: 'pi-grid', label: 'Dashboard' }"></ng-container>
+    <ng-container *ngTemplateOutlet="navItem; context: { link: '/circulation', icon: 'pi-refresh', label: 'Circulation' }"></ng-container>
+    <ng-container *ngTemplateOutlet="navItem; context: { link: '/admin-inventory', icon: 'pi-book', label: 'Inventory' }"></ng-container>
+    <ng-container *ngTemplateOutlet="navItem; context: { link: '/students', icon: 'pi-users', label: 'Students' }"></ng-container>
+    <ng-container *ngTemplateOutlet="navItem; context: { link: '/clearance', icon: 'pi-verified', label: 'Clearance' }"></ng-container>
+    <ng-container *ngTemplateOutlet="navItem; context: { link: '/staff', icon: 'pi-briefcase', label: 'Staff' }"></ng-container>
   </nav>
 
-  <div class="mt-auto space-y-4">
-    <button
-      class="flex items-center space-x-3 px-4 py-2 text-slate-500 text-sm hover:text-white transition-colors"
-    >
+  <div class="mt-auto pt-6 border-t border-white/5 space-y-4">
+    <a routerLink="/security-logs" routerLinkActive="text-indigo-400" 
+       class="flex items-center space-x-3 px-4 py-2 text-slate-500 text-sm hover:text-white transition-all hover:translate-x-1">
+      <i class="pi pi-shield"></i> <span>Security Logs</span>
+    </a>
+    <button class="flex items-center space-x-3 px-4 py-2 text-slate-500 text-sm hover:text-red-400 transition-all hover:translate-x-1 w-full text-left">
       <i class="pi pi-sign-out"></i> <span>Sign Out</span>
     </button>
   </div>
 </aside>
+
+<ng-template #navItem let-link="link" let-icon="icon" let-label="label">
+  <a [routerLink]="link"
+     routerLinkActive="bg-indigo-600/10 text-indigo-400 border-indigo-600/20 shadow-[inset_0_0_12px_rgba(99,102,241,0.05)] active"
+     [routerLinkActiveOptions]="{ exact: true }"
+     class="group flex items-center justify-between px-4 py-3 rounded-xl text-slate-400 border border-transparent hover:bg-white/5 hover:text-white hover:translate-x-1 transition-all duration-300">
+    <div class="flex items-center space-x-3">
+      <i [class]="'pi ' + icon + ' transition-transform duration-300 group-hover:scale-110'"></i>
+      <span class="font-medium tracking-wide">{{ label }}</span>
+    </div>
+    <div class="w-1 h-1 rounded-full bg-indigo-500 opacity-0 group-[.active]:opacity-100 shadow-[0_0_8px_rgba(99,102,241,0.8)] transition-opacity"></div>
+  </a>
+</ng-template>
