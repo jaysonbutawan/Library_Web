@@ -12,8 +12,8 @@
 
   <nav class="grow space-y-1.5">
     <ng-container *ngTemplateOutlet="navItem; context: { link: '/dashboard', icon: 'pi-grid', label: 'Dashboard' }"></ng-container>
-    <ng-container *ngTemplateOutlet="navItem; context: { link: '/circulation', icon: 'pi-refresh', label: 'Circulation' }"></ng-container>
-    <ng-container *ngTemplateOutlet="navItem; context: { link: '/admin-inventory', icon: 'pi-book', label: 'Inventory' }"></ng-container>
+    <ng-container *ngTemplateOutlet="navItem; context: { link: '/admin/circulation', icon: 'pi-refresh', label: 'Circulation' }"></ng-container>
+    <ng-container *ngTemplateOutlet="navItem; context: { link: '/admin/inventory', icon: 'pi-book', label: 'Inventory' }"></ng-container>
     <ng-container *ngTemplateOutlet="navItem; context: { link: '/students', icon: 'pi-users', label: 'Students' }"></ng-container>
     <ng-container *ngTemplateOutlet="navItem; context: { link: '/clearance', icon: 'pi-verified', label: 'Clearance' }"></ng-container>
     <ng-container *ngTemplateOutlet="navItem; context: { link: '/staff', icon: 'pi-briefcase', label: 'Staff' }"></ng-container>
@@ -24,7 +24,7 @@
        class="flex items-center space-x-3 px-4 py-2 text-slate-500 text-sm hover:text-white transition-all hover:translate-x-1">
       <i class="pi pi-shield"></i> <span>Security Logs</span>
     </a>
-    <button class="flex items-center space-x-3 px-4 py-2 text-slate-500 text-sm hover:text-red-400 transition-all hover:translate-x-1 w-full text-left">
+    <button class="flex items-center space-x-3 px-4 py-2 text-slate-500 text-sm hover:text-red-400   *:transition-all hover:translate-x-1 w-full text-left">
       <i class="pi pi-sign-out"></i> <span>Sign Out</span>
     </button>
   </div>
