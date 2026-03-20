@@ -1,33 +1,143 @@
 <section class="space-y-8 animate-in fade-in duration-500">
+  <!-- Header + Toolbar -->
   <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
     <div>
       <h1 class="text-4xl font-bold text-white tracking-tight">Borrow Requests</h1>
-      <p class="text-slate-400 mt-2 font-medium">Review and manage pending asset transition requests.</p>
+      <p class="text-slate-400 mt-2 font-medium">
+        Review and manage pending asset transition requests.
+      </p>
     </div>
 
-    <div class="flex flex-wrap items-center gap-4">
-      <div class="relative w-64">
-        <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
-        <input type="text" placeholder="Search student or book..."
-               class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-11 pr-4 text-sm text-white focus:ring-2 focus:ring-indigo-500/50 transition-all outline-none">
+    <div class="flex flex-wrap items-end gap-4">
+      <!-- Search -->
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+          >Search</label
+        >
+        <div class="relative w-full md:w-72">
+          <svg
+            class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
+            xmlns="http://www.w3.org/2000/svg"
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search student or book..."
+            class="w-full bg-[#1a1d26] border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:ring-2 focus:ring-indigo-500/50 transition-all outline-none"
+          />
+        </div>
       </div>
-      
-      <select 
-      id="a"
-      
-      class="bg-[#1a1d26] border border-white/10 rounded-xl py-2.5 px-4 text-sm text-slate-300 outline-none focus:ring-2 focus:ring-indigo-500/50">
-        <option>All Status</option>
-        <option>Pending</option>
-        <option>Approved</option>
-        <option>Rejected</option>
-      </select>
+
+      <!-- Filter -->
+      <div class="flex flex-col gap-1.5">
+        <label
+          for="statusFilter"
+          class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+          >Filter by Status</label
+        >
+        <select
+          id="statusFilter"
+          class="bg-[#1a1d26] border border-white/10 rounded-xl py-2.5 px-4 text-sm text-slate-300 outline-none focus:ring-2 focus:ring-indigo-500/50 w-full md:w-48 cursor-pointer"
+        >
+          <option>All Status</option>
+          <option>Pending</option>
+          <option>Approved</option>
+          <option>Rejected</option>
+        </select>
+      </div>
     </div>
   </div>
 
-  <div class="bg-[#11141d]/50 border border-white/5 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-md">
+  <!-- ── MOBILE: Card List (hidden on md+) ── -->
+  <div class="flex flex-col gap-3 md:hidden">
+    @for (request of borrowRequests; track request.id) {
+      <div class="bg-[#11141d]/50 border border-white/5 rounded-2xl p-4 backdrop-blur-md">
+        <div class="flex items-center gap-3 mb-3">
+          <div
+            class="w-9 h-9 rounded-full bg-linear-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
+          >
+            {{ request.studentInitials }}
+          </div>
+          <div>
+            <p class="font-bold text-white text-sm">{{ request.studentName }}</p>
+            <p class="text-slate-400 text-xs">{{ request.bookTitle }}</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-mono text-xs text-slate-500">{{ request.date }}</span>
+          <span
+            [ngClass]="{
+              'bg-amber-500/10 text-amber-500 border-amber-500/20': request.status === 'Pending',
+              'bg-emerald-500/10 text-emerald-500 border-emerald-500/20':
+                request.status === 'Approved',
+              'bg-red-500/10 text-red-500 border-red-500/20': request.status === 'Rejected',
+            }"
+            class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border"
+          >
+            {{ request.status }}
+          </span>
+        </div>
+        <div class="flex gap-2">
+          <button
+            (click)="openConfirm(request)"
+            class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-600 hover:bg-green-500 text-white rounded-xl text-sm font-bold transition-all active:scale-95"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            Approve
+          </button>
+          <button
+            class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl text-sm font-bold transition-all active:scale-95"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+            Reject
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ── DESKTOP: Table (hidden on mobile) ── -->
+  <div
+    class="hidden md:block bg-[#11141d]/50 border border-white/5 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-md"
+  >
     <div class="overflow-x-auto">
       <table class="w-full text-left">
-        <thead class="text-[10px] uppercase text-slate-500 tracking-[0.2em] border-b border-white/5 bg-white/[0.02]">
+        <thead
+          class="text-[10px] uppercase text-slate-500 tracking-[0.2em] border-b border-white/5 bg-white/2"
+        >
           <tr>
             <th class="px-8 py-5">Student</th>
             <th class="px-8 py-5">Book Title</th>
@@ -38,38 +148,74 @@
         </thead>
         <tbody class="divide-y divide-white/5 text-sm">
           @for (request of borrowRequests; track request.id) {
-            <tr class="hover:bg-white/[0.02] transition-colors group">
-              <td class="px-8 py-6">
-                <div class="flex items-center space-x-3">
-                  <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-[10px] font-bold">
+            <tr class="hover:bg-white/2 transition-colors">
+              <td class="px-8 py-5">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-8 h-8 rounded-full bg-linear-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-[10px] font-bold flex-shrink-0"
+                  >
                     {{ request.studentInitials }}
                   </div>
                   <span class="font-bold text-white">{{ request.studentName }}</span>
                 </div>
               </td>
-              <td class="px-8 py-6 text-slate-300 font-medium">{{ request.bookTitle }}</td>
-              <td class="px-8 py-6 text-center text-slate-500 font-mono text-xs">{{ request.date }}</td>
-              <td class="px-8 py-6">
+              <td class="px-8 py-5 text-slate-300 font-medium">{{ request.bookTitle }}</td>
+              <td class="px-8 py-5 text-center text-slate-500 font-mono text-xs">
+                {{ request.date }}
+              </td>
+              <td class="px-8 py-5">
                 <div class="flex justify-center">
-                  <span [ngClass]="{
-                    'bg-amber-500/10 text-amber-500 border-amber-500/20': request.status === 'Pending',
-                    'bg-emerald-500/10 text-emerald-500 border-emerald-500/20': request.status === 'Approved',
-                    'bg-red-500/10 text-red-500 border-red-500/20': request.status === 'Rejected'
-                  }" class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border">
+                  <span
+                    [ngClass]="{
+                      'bg-amber-500/10 text-amber-500 border-amber-500/20':
+                        request.status === 'Pending',
+                      'bg-emerald-500/10 text-emerald-500 border-emerald-500/20':
+                        request.status === 'Approved',
+                      'bg-red-500/10 text-red-500 border-red-500/20': request.status === 'Rejected',
+                    }"
+                    class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border"
+                  >
                     {{ request.status }}
                   </span>
                 </div>
               </td>
-              <td class="px-8 py-6">
-                <div class="flex justify-end space-x-2">
-                  <button (click)="openConfirm(request)" 
-                  type="button"
-                  aria-label="confirm"
-                          class="bg-emerald-600/20 text-emerald-500 hover:bg-emerald-600 hover:text-white p-2 rounded-lg transition-all">
-                    <i class="pi pi-check text-xs"></i>
+              <td class="px-8 py-5">
+                <div class="flex justify-end gap-2">
+                  <button
+                    (click)="openConfirm(request)"
+                    class="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-green-900/40"
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Approve
                   </button>
-                  <button type="button" aria-label="reject" class="bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white p-2 rounded-lg transition-all">
-                    <i class="pi pi-times text-xs"></i>
+                  <button
+                    class="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-900/40"
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                    Reject
                   </button>
                 </div>
               </td>
@@ -79,32 +225,71 @@
       </table>
     </div>
 
-    <div class="p-6 border-t border-white/5 bg-white/[0.01] flex items-center justify-between">
-      <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Showing 1 to 10 of 42 entries</p>
-      <div class="flex space-x-2">
-        <button class="px-4 py-2 rounded-lg bg-white/5 text-slate-400 hover:text-white text-xs transition-all">Previous</button>
-        <button class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-bold transition-all">Next</button>
+    <!-- Pagination -->
+    <div
+      class="p-6 border-t border-white/5 bg-white/1 flex flex-wrap items-center justify-between gap-4"
+    >
+      <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">
+        Showing 1 to 10 of 42 entries
+      </p>
+      <div class="flex gap-2">
+        <button
+          class="px-4 py-2 rounded-lg bg-white/5 text-slate-400 hover:text-white text-xs transition-all"
+        >
+          Previous
+        </button>
+        <button
+          class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-bold transition-all"
+        >
+          Next
+        </button>
       </div>
     </div>
   </div>
 </section>
 
 @if (showConfirm) {
-  <div class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in" (click)="showConfirm = false"></div>
-    <div class="relative bg-[#11141d] border border-white/10 w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 animate-in zoom-in-95">
+  <div class="fixed inset-0 z-100 flex items-center justify-center p-4">
+    <div
+      class="absolute inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in"
+      (click)="showConfirm = false"
+    ></div>
+    <div
+      class="relative bg-[#11141d] border border-white/10 w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 animate-in zoom-in-95"
+    >
       <div class="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6">
-        <i class="pi pi-question-circle text-emerald-500 text-3xl"></i>
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#10b981"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
       </div>
       <h3 class="text-2xl font-bold text-white tracking-tight">Confirm Approval</h3>
       <p class="text-slate-400 mt-2 leading-relaxed">
-        Are you sure you want to approve <strong>{{ selectedRequest?.studentName }}</strong>'s request for 
-        <strong>"{{ selectedRequest?.bookTitle }}"</strong>?
+        Are you sure you want to approve
+        <strong class="text-white">{{ selectedRequest?.studentName }}</strong
+        >'s request for <strong class="text-white">"{{ selectedRequest?.bookTitle }}"</strong>?
       </p>
-      
-      <div class="mt-8 flex space-x-4">
-        <button (click)="showConfirm = false" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:text-white transition-colors">Cancel</button>
-        <button (click)="approveRequest()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl font-bold shadow-lg shadow-indigo-600/20 transition-all">
+      <div class="mt-8 flex gap-4">
+        <button
+          (click)="showConfirm = false"
+          class="flex-1 py-3 text-sm font-bold text-slate-500 hover:text-white transition-colors rounded-xl border border-white/5 hover:border-white/10"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="approveRequest()"
+          class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl font-bold shadow-lg shadow-indigo-600/20 transition-all"
+        >
           Approve Request
         </button>
       </div>
