@@ -4,6 +4,7 @@ import { LayoutComponent } from '../modules/admin/layout.components.';
 import { InventoryComponent } from '../modules/admin/inventory/inventory.component';
 import { CirculationComponent } from '../modules/admin/circulations/circulation.component';
 import { StudentsComponent } from '../modules/admin/students/student.component';
+import { StudentDetailComponent } from '../modules/admin/students/student-detail.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -22,6 +23,10 @@ export const routes: Routes = [
       {
         path: 'students',
         component: StudentsComponent
+      }
+      {
+        path: 'students/:id',
+        component: StudentDetailComponent
       }
 
     ]

@@ -1,0 +1,141 @@
+<div class="min-h-screen p-4 md:p-8 space-y-8 animate-in fade-in duration-500">
+  
+  <div class="bg-[#11141d]/80 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-xl relative overflow-hidden shadow-2xl">
+    <div class="flex flex-col md:flex-row items-center md:items-start gap-8 relative z-10">
+      <div class="relative">
+        <img [src]="student.avatar" class="w-32 h-32 rounded-3xl border-4 border-indigo-500/30 object-cover shadow-2xl" alt="">
+        <div class="absolute -bottom-2 -right-2 w-6 h-6 bg-emerald-500 border-4 border-[#11141d] rounded-full"></div>
+      </div>
+      
+      <div class="flex-1 text-center md:text-left space-y-2">
+        <span class="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-bold uppercase tracking-widest rounded-full">Verified Graduate</span>
+        <h1 class="text-5xl font-black text-white tracking-tight">{{ student.name }}</h1>
+        <div class="flex flex-wrap justify-center md:justify-start gap-4 text-slate-400 text-sm font-medium">
+          <span class="flex items-center gap-2"><i class="pi pi-fingerprint text-indigo-500"></i> {{ student.studentId }}</span>
+          <span class="flex items-center gap-2"><i class="pi pi-graduation-cap text-indigo-500"></i> {{ student.level }} | {{ student.faculty }}</span>
+        </div>
+      </div>
+
+      <div class="flex gap-3">
+        <button type="button" aria-label="Send Message" class="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl text-slate-400 hover:text-white hover:bg-white/10 transition-all">
+          <i class="pi pi-envelope"></i>
+        </button>
+        <button type="button" aria-label="More Options" class="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-2xl text-slate-400 hover:text-white hover:bg-white/10 transition-all">
+          <i class="pi pi-ellipsis-v"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-indigo-600/5 border border-indigo-500/20 p-8 rounded-4xl space-y-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Outstanding Balance</p>
+          <h2 class="text-4xl font-black text-white">{{ student.balance | currency }}</h2>
+        </div>
+        <i class="pi pi-wallet text-2xl text-slate-600"></i>
+      </div>
+      <button type="button" aria-label="Settle Fines" class="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold shadow-lg shadow-indigo-600/30 transition-all">
+        Settle Fines
+      </button>
+    </div>
+
+    <div class="bg-white/2 border border-white/5 p-8 rounded-4xl space-y-6">
+      <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Active Borrows</p>
+      <h2 class="text-4xl font-black text-white">{{ student.activeBorrows | number:'2.0' }}</h2>
+      <div class="flex items-center gap-2 text-indigo-400 text-xs font-bold italic">
+        <i class="pi pi-chart-line"></i>
+        <span>Within regular limit (05)</span>
+      </div>
+    </div>
+
+    <div class="bg-white/2 border border-white/5 p-8 rounded-4xl space-y-6">
+      <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Books Borrowed</p>
+      <h2 class="text-4xl font-black text-white">{{ student.totalBorrowed }}</h2>
+      <div class="flex items-center gap-2 text-slate-500 text-xs font-bold">
+        <i class="pi pi-calendar"></i>
+        <span>Since {{ student.joinDate }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-[#11141d]/50 border border-white/5 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-10">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
+          <i class="pi pi-book text-white"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white">Borrowing Activity History</h3>
+      </div>
+      
+      <div class="flex bg-white/5 p-1 rounded-xl">
+        <button type="button" aria-label="View All Transactions" class="px-4 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white">All Transactions</button>
+        <button type="button" aria-label="View Pending Transactions" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-white transition-all">Pending</button>
+        <button type="button" aria-label="View Resolved Transactions" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-white transition-all">Resolved</button>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead class="text-[10px] uppercase text-slate-500 tracking-[0.2em] border-b border-white/5">
+          <tr>
+            <th class="pb-6">Book Title & Author</th>
+            <th class="pb-6">Borrow Date</th>
+            <th class="pb-6">Due Date</th>
+            <th class="pb-6">Status</th>
+            <th class="pb-6 text-right">Fine Breakdown</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-white/5">
+          @for (item of history; track item.id) {
+            <tr class="group">
+              <td class="py-6">
+                <div class="flex items-center gap-4">
+                  <div [style.background]="item.color" class="w-10 h-14 rounded-md shadow-lg border border-white/10 shrink-0"></div>
+                  <div>
+                    <div class="font-bold text-white mb-1">{{ item.title }}</div>
+                    <div class="text-xs text-slate-500">{{ item.author }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="py-6 text-sm text-slate-400 font-medium">{{ item.borrowDate }}</td>
+              <td class="py-6">
+                <div class="text-sm font-bold" [class.text-red-500]="item.isOverdue" [class.text-indigo-400]="item.status === 'Active'">
+                  {{ item.dueDate }}
+                </div>
+                <div class="text-[10px] uppercase font-black tracking-wider" [class.text-red-800]="item.isOverdue">
+                  {{ item.subDate }}
+                </div>
+              </td>
+              <td class="py-6">
+                <span [ngClass]="{
+                  'bg-red-500/10 text-red-500 border-red-500/20': item.status === 'Overdue',
+                  'bg-indigo-500/10 text-indigo-400 border-indigo-500/20': item.status === 'Active',
+                  'bg-emerald-500/10 text-emerald-500 border-emerald-500/20': item.status === 'Returned'
+                }" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border">
+                  ● {{ item.status }}
+                </span>
+              </td>
+              <td class="py-6 text-right font-mono text-sm">
+                <span class="text-white font-bold">{{ item.fine | currency }}</span>
+                <span class="text-slate-600 text-[10px] ml-2 font-sans uppercase">({{ item.fineNote }})</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-10 flex items-center justify-between border-t border-white/5 pt-8">
+      <p class="text-xs text-slate-500">Showing 1-4 of 12 historical transactions</p>
+      <div class="flex gap-2">
+        <button aria-label="Previous Page" class="w-10 h-10 rounded-xl bg-white/5 text-slate-600 flex items-center justify-center hover:text-white"><i class="pi pi-chevron-left"></i></button>
+        <button class="w-10 h-10 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center shadow-lg shadow-indigo-600/40">1</button>
+        <button class="w-10 h-10 rounded-xl bg-white/5 text-slate-400 font-bold flex items-center justify-center hover:bg-white/10">2</button>
+        <button class="w-10 h-10 rounded-xl bg-white/5 text-slate-400 font-bold flex items-center justify-center hover:bg-white/10">3</button>
+        <button aria-label="Next Page" class="w-10 h-10 rounded-xl bg-white/5 text-slate-600 flex items-center justify-center hover:text-white"><i class="pi pi-chevron-right"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
