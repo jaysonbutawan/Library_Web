@@ -1,0 +1,307 @@
+<section class="space-y-6 animate-in fade-in duration-500">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-white tracking-tight">Students & Borrowing Activity</h1>
+      <p class="text-slate-400 text-sm mt-1">Monitor member compliance and asset distribution.</p>
+    </div>
+    <button
+    type="button"
+    title=""
+      class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-600/20 transition-all font-bold text-sm hover:scale-105 active:scale-95"
+    >
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="18" y1="20" x2="18" y2="10" />
+        <line x1="12" y1="20" x2="12" y2="4" />
+        <line x1="6" y1="20" x2="6" y2="14" />
+      </svg>
+      <span>View Reports</span>
+    </button>
+  </div>
+
+  <!-- Toolbar -->
+  <div
+    class="bg-[#11141d]/50 border border-white/5 rounded-2xl p-4 flex flex-col md:flex-row gap-4 backdrop-blur-md"
+  >
+    <div class="relative flex-1">
+      <svg
+        class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearch()"
+        placeholder="Search students by name or ID..."
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all placeholder:text-slate-500"
+      />
+    </div>
+    <div class="flex flex-col gap-1.5">
+      <label
+        for="status-select"
+        class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+        >Filter by Status</label
+      >
+      <select
+        id="status-select"
+        [(ngModel)]="statusFilter"
+        (ngModelChange)="onSearch()"
+        class="bg-[#1a1d26] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer w-full md:w-44"
+      >
+        <option value="all">Status (All)</option>
+        <option value="clear">Clear</option>
+        <option value="fines">With Fines</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Desktop Table -->
+  <div
+    class="hidden md:block bg-[#11141d]/50 border border-white/5 rounded-3xl overflow-hidden shadow-2xl"
+  >
+    <table class="w-full text-left">
+      <thead
+        class="text-[10px] uppercase text-slate-500 tracking-[0.2em] border-b border-white/5 bg-white/2"
+      >
+        <tr>
+          <th class="px-6 py-5 font-bold">Student Name</th>
+          <th class="px-6 py-5 font-bold">Student ID</th>
+          <th class="px-6 py-5 font-bold text-center">Total Borrowed</th>
+          <th class="px-6 py-5 font-bold text-center">Current Books</th>
+          <th class="px-6 py-5 font-bold">Total Fines</th>
+          <th class="px-6 py-5 font-bold">Status</th>
+          <th class="px-6 py-5"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/5 text-sm">
+        @for (student of pagedStudents; track student.id) {
+          <tr
+            (click)="navigateToDetails(student.id)"
+            class="hover:bg-indigo-500/5 transition-colors cursor-pointer group"
+          >
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <img
+                  [src]="student.avatar"
+                  class="w-9 h-9 rounded-full border border-white/10 object-cover shrink-0"
+                  alt=""
+                />
+                <span class="font-bold text-white text-sm">{{ student.name }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 text-slate-400 font-mono text-xs">{{ student.studentId }}</td>
+            <td class="px-6 py-4 text-center text-slate-200 font-semibold">
+              {{ student.totalBorrowed }}
+            </td>
+            <td class="px-6 py-4 text-center text-slate-200 font-semibold">
+              {{ student.currentBooks }}
+            </td>
+            <td
+              class="px-6 py-4 font-bold text-sm"
+              [class.text-amber-400]="student.fines > 0"
+              [class.text-slate-400]="student.fines === 0"
+            >
+              {{ student.fines | currency }}
+            </td>
+            <td class="px-6 py-4">
+              <span
+                [ngClass]="
+                  student.fines > 0
+                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                    : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                "
+                class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest border inline-flex items-center gap-1.5"
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full inline-block"
+                  [class.bg-amber-400]="student.fines > 0"
+                  [class.bg-emerald-400]="student.fines === 0"
+                >
+                </span>
+                {{ student.fines > 0 ? 'With Fines' : 'Clear' }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+              <svg
+                class="text-indigo-400 inline"
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </td>
+          </tr>
+        }
+
+        <!-- Empty state -->
+        @if (pagedStudents.length === 0) {
+          <tr>
+            <td colspan="7" class="px-6 py-16 text-center text-slate-500 text-sm">
+              No students found matching your search.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mobile Cards -->
+  <div class="md:hidden space-y-3">
+    @for (student of pagedStudents; track student.id) {
+      <div
+        (click)="navigateToDetails(student.id)"
+        class="bg-[#11141d] border border-white/10 rounded-2xl p-4 active:scale-[0.98] transition-all cursor-pointer hover:border-white/20"
+      >
+        <div class="flex justify-between items-start mb-4">
+          <div class="flex items-center gap-3">
+            <img
+              [src]="student.avatar"
+              class="w-10 h-10 rounded-full border border-white/10 object-cover"
+              alt=""
+            />
+            <div>
+              <div class="font-bold text-white text-sm">{{ student.name }}</div>
+              <div class="text-xs text-slate-500 font-mono mt-0.5">{{ student.studentId }}</div>
+            </div>
+          </div>
+          <span
+            [ngClass]="
+              student.fines > 0
+                ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+            "
+            class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg border inline-flex items-center gap-1"
+          >
+            <span
+              class="w-1.5 h-1.5 rounded-full"
+              [class.bg-amber-400]="student.fines > 0"
+              [class.bg-emerald-400]="student.fines === 0"
+            ></span>
+            {{ student.fines > 0 ? 'Fines' : 'Clear' }}
+          </span>
+        </div>
+        <div class="grid grid-cols-3 gap-3 border-t border-white/5 pt-4">
+          <div>
+            <div class="text-[10px] text-slate-500 uppercase font-bold mb-1">Borrowed</div>
+            <div class="text-white font-bold text-sm">{{ student.totalBorrowed }}</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-500 uppercase font-bold mb-1">Current</div>
+            <div class="text-white font-bold text-sm">{{ student.currentBooks }}</div>
+          </div>
+          <div class="text-right">
+            <div class="text-[10px] text-slate-500 uppercase font-bold mb-1">Fines</div>
+            <div
+              class="font-bold text-sm"
+              [class.text-amber-400]="student.fines > 0"
+              [class.text-slate-400]="student.fines === 0"
+            >
+              {{ student.fines | currency }}
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+    <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">
+      Showing {{ rangeStart }}–{{ rangeEnd }} of {{ filteredStudents.length }} students
+    </p>
+
+    <div class="flex items-center gap-1.5">
+      <!-- Previous -->
+      <button
+      type="button"
+        aria-label="Previous Page"
+        title="Previous Page"
+        (click)="goToPage(currentPage - 1)"
+        [disabled]="currentPage === 1"
+        class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+
+      <!-- Page Numbers -->
+      @for (page of visiblePages; track page) {
+        @if (page === '...') {
+          <span class="w-9 h-9 flex items-center justify-center text-slate-600 text-sm">…</span>
+        } @else {
+          <button
+          type="button"
+            (click)="goToPage(+page)"
+            [class.bg-indigo-600]="currentPage === +page"
+            [class.text-white]="currentPage === +page"
+            [class.font-bold]="currentPage === +page"
+            [class.shadow-lg]="currentPage === +page"
+            [class.shadow-indigo-600/30]="currentPage === +page"
+            [class.bg-white/5]="currentPage !== +page"
+            [class.text-slate-400]="currentPage !== +page"
+            class="w-9 h-9 rounded-xl text-sm transition-all hover:bg-indigo-600/20 hover:text-white"
+          >
+            {{ page }}
+          </button>
+        }
+      }
+
+      <!-- Next -->
+      <button
+      type="button"
+        (click)="goToPage(currentPage + 1)"
+        [disabled]="currentPage === totalPages"
+        title="Next Page"
+        class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
