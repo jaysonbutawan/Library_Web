@@ -1,49 +1,58 @@
 import { Component, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from "@angular/common";
-import { ReactiveFormsModule,FormGroup,FormControl, Validators} from "@angular/forms";
-import { BookAsset } from "../inventory.component.dto";
+import { ReactiveFormsModule, FormGroup, FormControl, Validators } from "@angular/forms";
+import { BookService } from './api.service';
+import { Book } from './book.dto';
 
 @Component({
   selector: "app-addbook-modal",
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: "../modal/addbook-modal.component.html",
+  templateUrl: "./addbook-modal.component.html",
 })
 export class AddbookModalComponent {
-@Output() close = new EventEmitter<void>();
-@Output() save = new EventEmitter<BookAsset>();
+  private bookService = inject(BookService);
+  
+  @Output() close = new EventEmitter<void>();
+  @Output() bookAdded = new EventEmitter<Book>();
 
   registerForm = new FormGroup({
     title: new FormControl('', Validators.required),
     author: new FormControl('', Validators.required),
     isbn: new FormControl('', Validators.required),
-    category: new FormControl('Philosophy'),
-    year: new FormControl('2026')
+    category: new FormControl('Technology', Validators.required),
+    publication_year: new FormControl(2026, [Validators.required, Validators.min(1000)]),
+    total_copies: new FormControl(1, [Validators.required, Validators.min(1)])
   });
 
   onClose() {
     this.close.emit();
   }
+
   onSubmit() {
     if (this.registerForm.valid) {
-      const newBook: BookAsset = {
-        id: Math.random().toString(36).substring(2, 9), 
-        title: this.registerForm.value.title ?? '',
-        author: this.registerForm.value.author ?? '',
-        isbn: this.registerForm.value.isbn ?? '',
-        category: this.registerForm.value.category ?? 'General',
-        status: 'AVAILABLE', 
-        isActive: true,
-        available_copies: 1,
-        total_copies: 1,
-        coverColor: 'bg-indigo-100'
+      const formValue = this.registerForm.value;
+      
+      const newBook: Book = {
+        title: formValue.title!,
+        author: formValue.author!,
+        isbn: formValue.isbn!,
+        category: formValue.category!,
+        publication_year: Number(formValue.publication_year),
+        total_copies: Number(formValue.total_copies),
+        available_copies: Number(formValue.total_copies), // Initially same as total
+        status: 'AVAILABLE'
       };
 
-      this.save.emit(newBook); 
-      this.onClose(); 
+      this.bookService.addBook(newBook).subscribe({
+        next: (response) => {
+          this.bookAdded.emit(response);
+          this.onClose();
+        },
+        error: (err) => console.error('Failed to save book', err)
+      });
     } else {
-      this.registerForm.markAllAsTouched(); 
+      this.registerForm.markAllAsTouched();
     }
   }
-
 }
