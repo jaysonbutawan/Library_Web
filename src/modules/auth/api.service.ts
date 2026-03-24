@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 import { LoginResponse } from './login.dto';
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,9 @@ export class StaffAuthService {
   private readonly API_URL = `${environment.apiUrl}/library/staff`;
 
   login(credentials: any): Observable<LoginResponse> {
+    const headers = new HttpHeaders({
+  'Accept': 'application/json' 
+});
     return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials).pipe(
       tap(response => {
         if (response.success && response.token) {
