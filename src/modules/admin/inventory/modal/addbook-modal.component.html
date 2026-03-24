@@ -6,8 +6,12 @@
   >
     <div class="p-8 pb-0 flex justify-between items-start">
       <div>
-        <h2 class="text-2xl font-bold text-white tracking-tight">Register New Book</h2>
-        <p class="text-slate-500 text-sm mt-1">Add secure asset record to library inventory</p>
+        <h2 class="text-2xl font-bold text-white tracking-tight">
+          {{ editBookData ? 'Edit Book' : 'Register New Book' }}
+        </h2>
+        <p class="text-slate-500 text-sm mt-1">
+          {{ editBookData ? 'Update the book record in library inventory' : 'Add secure asset record to library inventory' }}
+        </p>
       </div>
       <button
         (click)="onClose()"
@@ -19,7 +23,14 @@
       </button>
     </div>
 
-    <form [formGroup]="registerForm" class="p-8 space-y-6">
+    <!-- ✅ Added id="bookForm" and (ngSubmit)="onSubmit()" -->
+    <form id="bookForm" [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="p-8 space-y-6">
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm">
+        <i class="pi pi-exclamation-circle mr-2"></i>{{ errorMessage }}
+      </div>
+
       <div class="grid grid-cols-2 gap-6">
         <div class="space-y-2">
           <label
@@ -80,6 +91,9 @@
             >
               <option value="Philosophy">Philosophy</option>
               <option value="Technology">Technology</option>
+              <option value="Science">Science</option>
+              <option value="History">History</option>
+              <option value="Fiction">Fiction</option>
             </select>
             <i
               class="pi pi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-xs"
@@ -89,14 +103,14 @@
 
         <div class="space-y-2">
           <label
-            for="year"
+            for="publication_year"
             class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
             >Publication Year</label
           >
           <input
-            id="year"
+            id="publication_year"
             type="text"
-            formControlName="year"
+            formControlName="publication_year"
             placeholder="2024"
             class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all"
           />
@@ -128,18 +142,20 @@
         Discard Changes
       </button>
 
+      <!-- ✅ type="submit" now correctly tied to form via form="bookForm" -->
       <button
         type="submit"
         form="bookForm"
-        [disabled]="!registerForm.valid"
+        [disabled]="registerForm.invalid || isLoading"
         class="relative group overflow-hidden bg-indigo-600 disabled:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-600/20 active:scale-[0.98] transition-all flex items-center gap-3"
       >
         <div
           class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
         ></div>
 
-        <i class="pi pi-check-circle text-sm"></i>
-        <span>Register Book</span>
+        <!-- ✅ Shows spinner when loading, adapts label for edit vs register -->
+        <i class="pi text-sm" [ngClass]="isLoading ? 'pi-spin pi-spinner' : 'pi-check-circle'"></i>
+        <span>{{ editBookData ? 'Save Changes' : 'Register Book' }}</span>
       </button>
     </div>
   </div>

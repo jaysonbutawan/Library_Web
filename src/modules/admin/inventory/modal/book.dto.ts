@@ -1,10 +1,10 @@
 export interface Book {
-  book_id?: number; // Optional because new books don't have an ID yet
+  book_id?: number; 
   isbn: string;
   title: string;
   author: string;
   category: string;
-  status: 'AVAILABLE' | 'BORROWED' | 'MAINTENANCE';
+  status: 'available' | 'borrowed' | 'maintenance';
   total_copies: number;
   available_copies: number;
   publication_year: number;
