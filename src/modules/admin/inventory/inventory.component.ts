@@ -13,8 +13,7 @@ import { BookService } from "./api.service";
 })
 export class InventoryComponent implements OnInit {
   private bookService = inject(BookService);
-  private cdr = inject(ChangeDetectorRef); // ← add this
-
+  private cdr = inject(ChangeDetectorRef);
   searchTerm: string = '';
   allBooks: Book[] = [];
   filteredBooks: Book[] = [];
@@ -29,9 +28,9 @@ export class InventoryComponent implements OnInit {
     this.bookService.getBooks().subscribe({
       next: (books) => {
         this.allBooks = books;
-        this.filteredBooks = [...books]; // ← spread to create new reference
+        this.filteredBooks = [...books]; 
         this.isLoading = false;
-        this.cdr.detectChanges(); // ← force UI update
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error loading books:', err);
@@ -93,4 +92,30 @@ export class InventoryComponent implements OnInit {
     );
     this.loadBooks();
   }
+
+  toggleStatus(book: Book) {
+  const newStatus = book.status === 'available' ? 'maintenance' : 'available';
+  this.bookService.updateBook(book.book_id!, { status: newStatus }).subscribe({
+    next: () => {
+      book.status = newStatus;
+      this.cdr.detectChanges();
+      this.showToast(
+        newStatus === 'available' ? 'Book marked as available.' : 'Book marked as unavailable.',
+        'success'
+      );
+    },
+    error: () => this.showToast('Failed to update status.', 'error')
+  });
+}
+
+deleteBook(book: Book) {
+  if (!confirm(`Delete "${book.title}"? This cannot be undone.`)) return;
+  this.bookService.deleteBook(book.book_id!).subscribe({
+    next: () => {
+      this.showToast('Book deleted successfully.', 'success');
+      this.loadBooks();
+    },
+    error: () => this.showToast('Failed to delete book.', 'error')
+  });
+}
 }
