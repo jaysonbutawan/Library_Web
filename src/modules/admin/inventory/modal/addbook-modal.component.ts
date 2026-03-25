@@ -1,8 +1,8 @@
 import { Component, Output, EventEmitter, inject, Input, OnInit } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from "@angular/forms";
-import { BookService } from './api.service';
-import { Book } from './book.dto';
+import { BookService } from '../api.service';
+import { Book } from '../book.dto';
 
 @Component({
   selector: "app-addbook-modal",
@@ -13,7 +13,7 @@ import { Book } from './book.dto';
 export class AddbookModalComponent implements OnInit {
   private api = inject(BookService);
 
-  @Input() editBookData?: Book; 
+  @Input() editBookData?: Book;
   @Output() close = new EventEmitter<void>();
   @Output() bookSaved = new EventEmitter<Book>();
 
