@@ -26,6 +26,7 @@
       </div>
     </div>
   }
+
   @if (isModalOpen) {
     <app-addbook-modal
       [editBookData]="selectedBook"
@@ -34,6 +35,7 @@
     ></app-addbook-modal>
   }
 
+  <!-- Header -->
   <div class="flex justify-between items-start">
     <div>
       <span
@@ -48,6 +50,7 @@
     <div class="flex items-center space-x-4">
       <button
         type="button"
+        aria-label="add book"
         (click)="toggleModal()"
         class="flex items-center space-x-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-600/20 transition-all font-bold text-sm"
       >
@@ -57,6 +60,7 @@
     </div>
   </div>
 
+  <!-- Filters -->
   <div
     class="bg-white/3 border border-white/10 rounded-3xl p-6 grid grid-cols-12 gap-8 items-center shadow-2xl backdrop-blur-sm"
   >
@@ -67,15 +71,16 @@
       >
         Category
       </label>
-
       <div class="relative group">
         <select
           id="categorySelect"
           class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer transition-all"
         >
-          <option>All Categories</option>
-          <option>Philosophy</option>
-          <option>Digital Art</option>
+          <option value="all" class="bg-[#11141d] text-white">All</option>
+          <option value="Technology" class="bg-[#11141d] text-white">Technology</option>
+          <option value="Science" class="bg-[#11141d] text-white">Science</option>
+          <option value="History" class="bg-[#11141d] text-white">History</option>
+          <option value="Fiction" class="bg-[#11141d] text-white">Fiction</option>
         </select>
         <i
           class="pi pi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-xs"
@@ -84,43 +89,67 @@
     </div>
 
     <div class="col-span-5">
-      <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1"
-        >Availability Status</label
-      >
+      <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">
+        Availability Status
+      </label>
       <div class="bg-white/5 border border-white/10 rounded-xl p-1 flex items-center h-12.5">
         <button
-          class="flex-1 h-full rounded-lg bg-indigo-600 text-white text-xs font-bold shadow-lg transition-all"
+          type="button"
+          aria-label="available"
+          (click)="filterByStatus('available')"
+          [class]="
+            selectedStatus === 'available'
+              ? 'flex-1 h-full rounded-lg bg-indigo-600 text-white text-xs font-bold shadow-lg transition-all'
+              : 'flex-1 h-full rounded-lg text-slate-400 hover:text-white text-xs font-bold transition-all'
+          "
         >
           Available
         </button>
         <button
-          class="flex-1 h-full rounded-lg text-slate-400 hover:text-white text-xs font-bold transition-all"
+          type="button"
+          aria-label="borrowed"
+          (click)="filterByStatus('borrowed')"
+          [class]="
+            selectedStatus === 'borrowed'
+              ? 'flex-1 h-full rounded-lg bg-indigo-600 text-white text-xs font-bold shadow-lg transition-all'
+              : 'flex-1 h-full rounded-lg text-slate-400 hover:text-white text-xs font-bold transition-all'
+          "
         >
           Borrowed
         </button>
         <button
-          class="flex-1 h-full rounded-lg text-slate-400 hover:text-white text-xs font-bold transition-all"
+          type="button"
+          aria-label="filter unavailable books"
+          (click)="filterByStatus('unavailable')"
+          [class]="
+            selectedStatus === 'unavailable'
+              ? 'flex-1 h-full rounded-lg bg-indigo-600 text-white text-xs font-bold shadow-lg transition-all'
+              : 'flex-1 h-full rounded-lg text-slate-400 hover:text-white text-xs font-bold transition-all'
+          "
         >
-          Reserved
+          Unavailable
         </button>
       </div>
     </div>
 
     <div class="col-span-1"></div>
-
     <div class="col-span-3">
       <label
+        for="order-by-select"
         class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1 text-right mr-1"
-        >Order By</label
       >
+        Order By
+      </label>
+
       <div class="relative group">
         <select
-          id="categorySelect"
+          id="order-by-select"
+          title="Order students by"
           class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer transition-all"
         >
-          <option>Date Registered</option>
-          <option>Alphabetical</option>
-          <option>Copy Count</option>
+          <option class="bg-[#11141d]">Date Registered</option>
+          <option class="bg-[#11141d]">Alphabetical</option>
+          <option class="bg-[#11141d]">Copy Count</option>
         </select>
         <i
           class="pi pi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-xs"
@@ -128,128 +157,276 @@
       </div>
     </div>
   </div>
-  <div class="bg-[#0d0f17] border border-white/5 rounded-4xl overflow-hidden shadow-2xl">
-    <div class="p-8 border-b border-white/5 flex justify-between items-center bg-white/1">
-      <h3 class="font-bold text-white flex items-center space-x-3">
-        <div class="bg-indigo-500/20 p-2 rounded-lg">
-          <i class="pi pi-chart-bar text-indigo-400 text-sm"></i>
-        </div>
-        <span>Books Registered</span>
-      </h3>
-    </div>
 
-    <table class="w-full text-left">
-      <thead
-        class="text-[10px] uppercase text-slate-500 tracking-[0.2em] border-b border-white/5 bg-white/1"
-      >
-        <tr>
-          <th class="px-8 py-5">Book Title</th>
-          <th class="px-8 py-5">Secure ID / ISBN</th>
-          <th class="px-8 py-5 text-center">Availability</th>
-          <th class="px-8 py-5 text-right">Operations</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-white/5 text-sm">
-        @if (isLoading) {
+  <!-- ── MOBILE: Card List (hidden on md+) ── -->
+  <div class="flex flex-col gap-3 md:hidden">
+    @if (isLoading) {
+      <div class="py-16 text-center text-slate-500">
+        <i class="pi pi-spin pi-spinner text-2xl mb-3 block"></i>
+        <span class="text-xs uppercase tracking-widest">Loading records...</span>
+      </div>
+    } @else if (paginatedBooks.length === 0) {
+      <div class="py-16 text-center text-slate-500">
+        <i class="pi pi-inbox text-2xl mb-3 block"></i>
+        <span class="text-xs uppercase tracking-widest">No books found</span>
+      </div>
+    } @else {
+      @for (book of paginatedBooks; track book.isbn) {
+        <div class="bg-[#0d0f17] border border-white/5 rounded-2xl p-4">
+          <div class="mb-3">
+            <div class="text-base font-bold text-white">{{ book.title }}</div>
+            <div class="text-xs text-slate-500 uppercase tracking-tight mt-0.5">
+              {{ book.author }} · {{ book.category }}
+            </div>
+          </div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs text-slate-400 font-mono">{{ book.isbn }}</span>
+            <span class="text-xs text-slate-600"
+              >{{ book.available_copies }}/{{ book.total_copies }}</span
+            >
+          </div>
+          <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mb-4">
+            <div
+              class="h-full rounded-full transition-all"
+              [ngClass]="book.available_copies > 0 ? 'bg-green-500' : 'bg-amber-500'"
+              [style.width.%]="getAvailabilityControl(book)"
+            ></div>
+          </div>
+          <div class="flex gap-2">
+            <button
+              type="button"
+              (click)="openEditModal(book)"
+              aria-label="Edit book"
+              class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 rounded-xl text-sm font-bold border border-indigo-500/20 transition-all active:scale-95"
+            >
+              <i class="pi pi-pencil text-sm"></i> Edit
+            </button>
+            <button
+              type="button"
+              (click)="toggleStatus(book)"
+              aria-label="Toggle status"
+              class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold border transition-all active:scale-95"
+              [ngClass]="
+                book.status === 'available'
+                  ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border-amber-500/20'
+                  : 'bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/20'
+              "
+            >
+              <i
+                class="pi text-sm"
+                [ngClass]="book.status === 'available' ? 'pi-eye-slash' : 'pi-eye'"
+              ></i>
+              {{ book.status === 'available' ? 'Disable' : 'Enable' }}
+            </button>
+            <button
+              type="button"
+              (click)="deleteBook(book)"
+              aria-label="Delete book"
+              class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-bold border border-red-500/20 transition-all active:scale-95"
+            >
+              <i class="pi pi-trash text-sm"></i> Delete
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Mobile pagination -->
+      <div class="flex items-center justify-between pt-2">
+        <span class="text-[10px] text-slate-500">
+          {{ (currentPage - 1) * pageSize + 1 }}–{{
+            currentPage * pageSize < filteredBooks.length
+              ? currentPage * pageSize
+              : filteredBooks.length
+          }}
+          of {{ filteredBooks.length }}
+        </span>
+        <div class="flex items-center gap-1">
+          <button
+            type="button"
+            aria-label="Previous page"
+            (click)="goToPage(currentPage - 1)"
+            [disabled]="currentPage === 1"
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <i class="pi pi-chevron-left text-xs"></i>
+          </button>
+          @for (page of pageNumbers; track page) {
+            <button
+              type="button"
+              [attr.aria-label]="'Page ' + page"
+              (click)="goToPage(page)"
+              [class]="
+                page === currentPage
+                  ? 'w-8 h-8 rounded-lg bg-indigo-600 text-white text-xs font-bold shadow-lg'
+                  : 'w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 text-xs font-bold transition-all'
+              "
+            >
+              {{ page }}
+            </button>
+          }
+          <button
+            type="button"
+            aria-label="Next page"
+            (click)="goToPage(currentPage + 1)"
+            [disabled]="currentPage === totalPages"
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <i class="pi pi-chevron-right text-xs"></i>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ── DESKTOP: Table (hidden on mobile) ── -->
+  <div
+    class="hidden md:block bg-[#0d0f17] border border-white/5 rounded-4xl overflow-hidden shadow-2xl"
+  >
+    <div class="overflow-x-auto">
+      <table class="w-full text-left min-w-175">
+        <thead
+          class="text-[10px] uppercase text-slate-500 tracking-[0.2em] border-b border-white/5 bg-white/1"
+        >
           <tr>
-            <td colspan="4" class="px-8 py-16 text-center text-slate-500">
-              <i class="pi pi-spin pi-spinner text-2xl mb-3 block"></i>
-              <span class="text-xs uppercase tracking-widest">Loading records...</span>
-            </td>
+            <th class="px-8 py-5">Book Title</th>
+            <th class="px-8 py-5">Secure ID / ISBN</th>
+            <th class="px-8 py-5 text-center">Availability</th>
+            <th class="px-8 py-5 text-right">Operations</th>
           </tr>
-        } @else if (filteredBooks.length === 0) {
-          <tr>
-            <td colspan="4" class="px-8 py-16 text-center text-slate-500">
-              <i class="pi pi-inbox text-2xl mb-3 block"></i>
-              <span class="text-xs uppercase tracking-widest">No books found</span>
-            </td>
-          </tr>
-        } @else {
-          @for (book of filteredBooks; track book.isbn) {
-            <tr class="hover:bg-white/2 transition-colors group">
-              <td class="px-8 py-6">
-                <div class="flex items-center space-x-4">
+        </thead>
+        <tbody class="divide-y divide-white/5 text-sm">
+          @if (isLoading) {
+            <tr>
+              <td colspan="4" class="px-8 py-16 text-center text-slate-500">
+                <i class="pi pi-spin pi-spinner text-2xl mb-3 block"></i>
+                <span class="text-xs uppercase tracking-widest">Loading records...</span>
+              </td>
+            </tr>
+          } @else if (paginatedBooks.length === 0) {
+            <tr>
+              <td colspan="4" class="px-8 py-16 text-center text-slate-500">
+                <i class="pi pi-inbox text-2xl mb-3 block"></i>
+                <span class="text-xs uppercase tracking-widest">No books found</span>
+              </td>
+            </tr>
+          } @else {
+            @for (book of paginatedBooks; track book.isbn) {
+              <tr class="hover:bg-white/2 transition-colors group">
+                <td class="px-8 py-6">
                   <div>
                     <div class="text-2xl font-bold text-white">{{ book.title }}</div>
                     <div class="text-lg text-slate-500 uppercase tracking-tighter mt-0.5">
                       {{ book.author }} · {{ book.category }}
                     </div>
                   </div>
-                </div>
-              </td>
-              <td class="text-lg px-8 py-6 text-slate-400 font-mono tracking-tight">
-                {{ book.isbn }}
-              </td>
-              <td class="px-8 py-6">
-                <div class="flex flex-col items-center gap-2">
-                  <div class="w-36 h-2 bg-white/10 rounded-full overflow-hidden">
-                    <div
-                      class="h-full rounded-full transition-all"
-                      [ngClass]="book.available_copies > 0 ? 'bg-green-500' : 'bg-amber-500'"
-                      [style.width.%]="getAvailabilityControl(book)"
-                    ></div>
+                </td>
+                <td class="text-lg px-8 py-6 text-slate-400 font-mono tracking-tight">
+                  {{ book.isbn }}
+                </td>
+                <td class="px-8 py-6">
+                  <div class="flex flex-col items-center gap-2">
+                    <div class="w-36 h-2 bg-white/10 rounded-full overflow-hidden">
+                      <div
+                        class="h-full rounded-full transition-all"
+                        [ngClass]="book.available_copies > 0 ? 'bg-green-500' : 'bg-amber-500'"
+                        [style.width.%]="getAvailabilityControl(book)"
+                      ></div>
+                    </div>
+                    <span class="text-lg text-slate-600"
+                      >{{ book.available_copies }}/{{ book.total_copies }}</span
+                    >
                   </div>
-                  <span class="text-lg text-slate-600"
-                    >{{ book.available_copies }}/{{ book.total_copies }}</span
-                  >
-                </div>
-              </td>
-              <td class="px-8 py-6">
-                <div class="flex items-center justify-end gap-2">
-                  <!-- Edit -->
-                  <button
-                    type="button"
-                    (click)="openEditModal(book)"
-                    aria-label="Edit book"
-                    title="Edit Book"
-                    class="flex items-center justify-center w-11 h-11 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 hover:text-indigo-300 border border-indigo-500/20 hover:border-indigo-500/40 transition-all active:scale-95"
-                  >
-                    <i class="pi pi-pencil text-lg"></i>
-                  </button>
-
-                  <!-- Toggle Status -->
-                  <button
-                    type="button"
-                    (click)="toggleStatus(book)"
-                    aria-label="Toggle status"
-                    [title]="book.status === 'available' ? 'Mark Unavailable' : 'Mark Available'"
-                    class="flex items-center justify-center w-11 h-11 rounded-xl transition-all active:scale-95 border"
-                    [ngClass]="
-                      book.status === 'available'
-                        ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 border-amber-500/20 hover:border-amber-500/40'
-                        : 'bg-green-500/10 hover:bg-green-500/20 text-green-400 hover:text-green-300 border-green-500/20 hover:border-green-500/40'
-                    "
-                  >
-                    <i
-                      class="pi text-lg"
-                      [ngClass]="book.status === 'available' ? 'pi-eye-slash' : 'pi-eye'"
-                    ></i>
-                  </button>
-
-                  <!-- Delete -->
-                  <button
-                    type="button"
-                    (click)="deleteBook(book)"
-                    aria-label="Delete book"
-                    title="Delete Book"
-                    class="flex items-center justify-center w-11 h-11 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-500/40 transition-all active:scale-95"
-                  >
-                    <i class="pi pi-trash text-lg color"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
+                </td>
+                <td class="px-8 py-6">
+                  <div class="flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      (click)="openEditModal(book)"
+                      aria-label="Edit book"
+                      title="Edit Book"
+                      class="flex items-center justify-center w-11 h-11 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 hover:text-indigo-300 border border-indigo-500/20 hover:border-indigo-500/40 transition-all active:scale-95"
+                    >
+                      <i class="pi pi-pencil text-lg"></i>
+                    </button>
+                    <button
+                      type="button"
+                      (click)="toggleStatus(book)"
+                      aria-label="Toggle status"
+                      [title]="book.status === 'available' ? 'Mark Unavailable' : 'Mark Available'"
+                      class="flex items-center justify-center w-11 h-11 rounded-xl transition-all active:scale-95 border"
+                      [ngClass]="
+                        book.status === 'available'
+                          ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 border-amber-500/20 hover:border-amber-500/40'
+                          : 'bg-green-500/10 hover:bg-green-500/20 text-green-400 hover:text-green-300 border-green-500/20 hover:border-green-500/40'
+                      "
+                    >
+                      <i
+                        class="pi text-lg"
+                        [ngClass]="book.status === 'available' ? 'pi-eye-slash' : 'pi-eye'"
+                      ></i>
+                    </button>
+                    <button
+                      type="button"
+                      (click)="deleteBook(book)"
+                      aria-label="Delete book"
+                      title="Delete Book"
+                      class="flex items-center justify-center w-11 h-11 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-500/40 transition-all active:scale-95"
+                    >
+                      <i class="pi pi-trash text-lg"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
           }
-        }
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
 
-    <div class="p-6 text-center border-t border-white/5 bg-white/1">
-      <button
-        class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] hover:text-indigo-400 transition-colors"
-      >
-        View All Archive Records
-      </button>
+    <!-- Desktop pagination -->
+    <div class="p-6 border-t border-white/5 bg-white/1 flex items-center justify-between">
+      <span class="text-xs text-slate-500">
+        Showing {{ (currentPage - 1) * pageSize + 1 }}–{{
+          currentPage * pageSize < filteredBooks.length
+            ? currentPage * pageSize
+            : filteredBooks.length
+        }}
+        of {{ filteredBooks.length }}
+      </span>
+      <div class="flex items-center gap-1">
+        <button
+          type="button"
+          aria-label="Previous page"
+          (click)="goToPage(currentPage - 1)"
+          [disabled]="currentPage === 1"
+          class="w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <i class="pi pi-chevron-left text-xs"></i>
+        </button>
+        @for (page of pageNumbers; track page) {
+          <button
+            type="button"
+            [attr.aria-label]="'Page ' + page"
+            (click)="goToPage(page)"
+            [class]="
+              page === currentPage
+                ? 'w-9 h-9 rounded-lg bg-indigo-600 text-white text-xs font-bold shadow-lg'
+                : 'w-9 h-9 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 text-xs font-bold transition-all'
+            "
+          >
+            {{ page }}
+          </button>
+        }
+        <button
+          type="button"
+          aria-label="Next page"
+          (click)="goToPage(currentPage + 1)"
+          [disabled]="currentPage === totalPages"
+          class="w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <i class="pi pi-chevron-right text-xs"></i>
+        </button>
+      </div>
     </div>
   </div>
 </section>

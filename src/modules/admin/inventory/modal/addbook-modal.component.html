@@ -1,172 +1,168 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-[#0b0c12]/60 backdrop-blur-sm p-4 animate-in fade-in duration-300"
+>
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-[#0b0c12]/60 backdrop-blur-sm p-4 animate-in fade-in duration-300"
+    class="bg-[#11141d] w-full max-w-2xl rounded-4xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-in zoom-in-95 duration-300"
   >
-    <div
-      class="bg-[#11141d] w-full max-w-2xl rounded-4xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-in zoom-in-95 duration-300"
-    >
-      <div class="p-8 pb-0 flex justify-between items-start">
-        <div>
-          <h2 class="text-2xl font-bold text-white tracking-tight">
-            {{ editBookData ? 'Edit Book' : 'Register New Book' }}
-          </h2>
-          <p class="text-slate-500 text-sm mt-1">
-            {{
-              editBookData
-                ? 'Update the book record in library inventory'
-                : 'Add secure asset record to library inventory'
-            }}
-          </p>
-        </div>
-        <button
-          (click)="onClose()"
-          type="button"
-          aria-label="Close modal"
-          class="text-slate-500 hover:text-white transition-colors p-2"
-        >
-          <i class="pi pi-times text-xl"></i>
-        </button>
+    <div class="p-8 pb-0 flex justify-between items-start">
+      <div>
+        <h2 class="text-2xl font-bold text-white tracking-tight">
+          {{ editBookData ? 'Edit Book' : 'Register New Book' }}
+        </h2>
+        <p class="text-slate-500 text-sm mt-1">
+          {{
+            editBookData
+              ? 'Update the book record in library inventory'
+              : 'Add secure asset record to library inventory'
+          }}
+        </p>
       </div>
+      <button
+        (click)="onClose()"
+        type="button"
+        aria-label="Close modal"
+        class="text-slate-500 hover:text-white transition-colors p-2"
+      >
+        <i class="pi pi-times text-xl"></i>
+      </button>
+    </div>
 
-      <!-- Added id="bookForm" and (ngSubmit)="onSubmit()" -->
-      <form id="bookForm" [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="p-8 space-y-6">
-        <!-- Error Message -->
-        @if (errorMessage) {
-          <div
-            class="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm"
+    <!-- Added id="bookForm" and (ngSubmit)="onSubmit()" -->
+    <form id="bookForm" [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="p-8 space-y-6">
+      <!-- Error Message -->
+      @if (errorMessage) {
+        <div
+          class="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm"
+        >
+          <i class="pi pi-exclamation-circle mr-2"></i>{{ errorMessage }}
+        </div>
+      }
+
+      <div class="grid grid-cols-2 gap-6">
+        <div class="space-y-2">
+          <label
+            for="bookTitle"
+            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+            >Book Title</label
           >
-            <i class="pi pi-exclamation-circle mr-2"></i>{{ errorMessage }}
-          </div>
-        }
+          <input
+            id="bookTitle"
+            type="text"
+            formControlName="title"
+            placeholder="e.g. The Iron Protocol"
+            class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
+          />
+        </div>
 
-        <div class="grid grid-cols-2 gap-6">
-          <div class="space-y-2">
-            <label
-              for="bookTitle"
-              class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
-              >Book Title</label
-            >
-            <input
-              id="bookTitle"
-              type="text"
-              formControlName="title"
-              placeholder="e.g. The Iron Protocol"
-              class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
-            />
-          </div>
+        <div class="space-y-2">
+          <label
+            for="leadAuthor"
+            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+            >Lead Author</label
+          >
+          <input
+            id="leadAuthor"
+            type="text"
+            formControlName="author"
+            placeholder="e.g. Marcus Thorne"
+            class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
+          />
+        </div>
 
-          <div class="space-y-2">
-            <label
-              for="leadAuthor"
-              class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
-              >Lead Author</label
-            >
-            <input
-              id="leadAuthor"
-              type="text"
-              formControlName="author"
-              placeholder="e.g. Marcus Thorne"
-              class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
-            />
-          </div>
+        <div class="space-y-2">
+          <label
+            for="isbn"
+            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+            >ISBN Reference</label
+          >
+          <input
+            id="isbn"
+            type="text"
+            formControlName="isbn"
+            placeholder="ISBN-978-0-..."
+            class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
+          />
+        </div>
 
-          <div class="space-y-2">
-            <label
-              for="isbn"
-              class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
-              >ISBN Reference</label
+        <div class="space-y-2">
+          <label
+            for="classification"
+            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+            >Category</label
+          >
+          <div class="relative">
+            <select
+              id="classification"
+              formControlName="category"
+              class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer"
             >
-            <input
-              id="isbn"
-              type="text"
-              formControlName="isbn"
-              placeholder="ISBN-978-0-..."
-              class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
-            />
-          </div>
-
-          <div class="space-y-2">
-            <label
-              for="classification"
-              class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
-              >Category</label
-            >
-            <div class="relative">
-              <select
-                id="classification"
-                formControlName="category"
-                class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer"
-              >
-                <option value="Philosophy" class="bg-[#11141d] text-white">Philosophy</option>
-                <option value="Technology" class="bg-[#11141d] text-white">Technology</option>
-                <option value="Science" class="bg-[#11141d] text-white">Science</option>
-                <option value="History" class="bg-[#11141d] text-white">History</option>
-                <option value="Fiction" class="bg-[#11141d] text-white">Fiction</option>
-              </select>
-              <i
-                class="pi pi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-xs"
-              ></i>
-            </div>
-          </div>
-
-          <div class="space-y-2">
-            <label
-              for="publication_year"
-              class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
-              >Publication Year</label
-            >
-            <input
-              id="publication_year"
-              type="text"
-              formControlName="publication_year"
-              placeholder="2024"
-              class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all"
-            />
-          </div>
-
-          <div class="space-y-2">
-            <label
-              for="totalCopies"
-              class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
-              >Total Stock</label
-            >
-            <input
-              id="totalCopies"
-              type="number"
-              formControlName="total_copies"
-              placeholder="e.g. 20"
-              class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all"
-            />
+              <option value="Philosophy" class="bg-[#11141d] text-white">Philosophy</option>
+              <option value="Technology" class="bg-[#11141d] text-white">Technology</option>
+              <option value="Science" class="bg-[#11141d] text-white">Science</option>
+              <option value="History" class="bg-[#11141d] text-white">History</option>
+              <option value="Fiction" class="bg-[#11141d] text-white">Fiction</option>
+            </select>
+            <i
+              class="pi pi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-xs"
+            ></i>
           </div>
         </div>
-      </form>
 
-      <div class="p-8 bg-white/2 border-t border-white/10 flex justify-end items-center gap-8">
-        <button
-          (click)="onClose()"
-          type="button"
-          class="text-xs font-black uppercase tracking-[0.2em] text-slate-500 hover:text-red-400 transition-all active:scale-95"
-        >
-          Discard Changes
-        </button>
+        <div class="space-y-2">
+          <label
+            for="publication_year"
+            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+            >Publication Year</label
+          >
+          <input
+            id="publication_year"
+            type="text"
+            formControlName="publication_year"
+            placeholder="2024"
+            class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all"
+          />
+        </div>
 
-        <!-- type="submit" now correctly tied to form via form="bookForm" -->
-        <button
-          type="submit"
-          form="bookForm"
-          [disabled]="registerForm.invalid || isLoading"
-          class="relative group overflow-hidden bg-indigo-600 disabled:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-600/20 active:scale-[0.98] transition-all flex items-center gap-3"
-        >
-          <div
-            class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
-          ></div>
-
-          <!-- Shows spinner when loading, adapts label for edit vs register -->
-          <i
-            class="pi text-sm"
-            [ngClass]="isLoading ? 'pi-spin pi-spinner' : 'pi-check-circle'"
-          ></i>
-          <span>{{ editBookData ? 'Save Changes' : 'Register Book' }}</span>
-        </button>
+        <div class="space-y-2">
+          <label
+            for="totalCopies"
+            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+            >Total Stock</label
+          >
+          <input
+            id="totalCopies"
+            type="number"
+            formControlName="total_copies"
+            placeholder="e.g. 20"
+            class="w-full bg-white border-none rounded-xl py-3 px-4 text-slate-900 focus:ring-2 focus:ring-indigo-500 transition-all"
+          />
+        </div>
       </div>
+    </form>
+
+    <div class="p-8 bg-white/2 border-t border-white/10 flex justify-end items-center gap-8">
+      <button
+        (click)="onClose()"
+        type="button"
+        class="text-xs font-black uppercase tracking-[0.2em] text-slate-500 hover:text-red-400 transition-all active:scale-95"
+      >
+        Discard Changes
+      </button>
+      <!-- Update the submit button -->
+      <button
+        type="submit"
+        form="bookForm"
+        [disabled]="(editBookData && !hasChanges) || registerForm.invalid || isLoading"
+        class="relative group overflow-hidden bg-indigo-600 disabled:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-600/20 active:scale-[0.98] transition-all flex items-center gap-3"
+      >
+        <div
+          class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+        ></div>
+
+        <!-- Shows spinner when loading, adapts label for edit vs register -->
+        <i class="pi text-sm" [ngClass]="isLoading ? 'pi-spin pi-spinner' : 'pi-check-circle'"></i>
+        <span>{{ editBookData ? 'Save Changes' : 'Register Book' }}</span>
+      </button>
     </div>
   </div>
+</div>

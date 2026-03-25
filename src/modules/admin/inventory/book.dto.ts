@@ -4,7 +4,7 @@ export interface Book {
   title: string;
   author: string;
   category: string;
-  status: 'available' | 'borrowed' | 'maintenance';
+  status: 'available' | 'borrowed' | 'unavailable' | 'maintenance';
   total_copies: number;
   available_copies: number;
   publication_year: number;

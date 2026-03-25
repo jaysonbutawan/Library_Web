@@ -27,27 +27,28 @@
       <span>View Reports</span>
     </button>
   </div>
-
-  <!-- Toolbar -->
-  <div
-    class="bg-[#11141d]/50 border border-white/5 rounded-2xl p-4 flex flex-col md:flex-row gap-4 backdrop-blur-md"
-  >
-    <div class="relative flex-1">
+<!-- Toolbar -->
+<div
+  class="bg-[#11141d]/50 border border-white/5 rounded-2xl p-4 flex flex-col md:flex-row md:items-end gap-4 backdrop-blur-md"
+>
+  <!-- Search -->
+  <div class="flex flex-col gap-1.5 flex-1">
+    <label
+      for="search-input"
+      class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+    >Search</label>
+    <div class="relative">
       <svg
         class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        width="15" height="15" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round"
       >
         <circle cx="11" cy="11" r="8" />
         <line x1="21" y1="21" x2="16.65" y2="16.65" />
       </svg>
       <input
+        id="search-input"
         type="text"
         [(ngModel)]="searchQuery"
         (ngModelChange)="onSearch()"
@@ -55,24 +56,49 @@
         class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all placeholder:text-slate-500"
       />
     </div>
-    <div class="flex flex-col gap-1.5">
-      <label
-        for="status-select"
-        class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
-        >Filter by Status</label
-      >
-      <select
-        id="status-select"
-        [(ngModel)]="statusFilter"
-        (ngModelChange)="onSearch()"
-        class="bg-[#1a1d26] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer w-full md:w-44"
-      >
-        <option value="all">Status (All)</option>
-        <option value="clear">Clear</option>
-        <option value="fines">With Fines</option>
-      </select>
-    </div>
   </div>
+
+  <!-- Status filter -->
+  <div class="flex flex-col gap-1.5">
+    <label
+      for="status-select"
+      class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+    >Filter by Status</label>
+    <select
+      id="status-select"
+      [(ngModel)]="statusFilter"
+      (ngModelChange)="onSearch()"
+      class="bg-[#1a1d26] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer w-full md:w-44"
+    >
+      <option value="all">Status (All)</option>
+      <option value="clear">Clear</option>
+      <option value="fines">With Fines</option>
+    </select>
+  </div>
+
+  <!-- Department filter -->
+  <div class="flex flex-col gap-1.5">
+    <label
+      for="department-select"
+      class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+    >Department</label>
+    <select
+      id="department-select"
+      [(ngModel)]="departmentFilter"
+      (ngModelChange)="onSearch()"
+      class="bg-[#1a1d26] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer w-full md:w-48"
+    >
+      <option value="all">All Departments</option>
+      <option value="CCS">CCS</option>
+      <option value="COE">COE</option>
+      <option value="CBA">CBA</option>
+      <option value="CASS">CASS</option>
+      <option value="CED">CED</option>
+      <option value="CSM">CSM</option>
+      <option value="CON">CON</option>
+    </select>
+  </div>
+</div>
 
   <!-- Desktop Table -->
   <div
@@ -85,6 +111,7 @@
         <tr>
           <th class="px-6 py-5 font-bold">Student Name</th>
           <th class="px-6 py-5 font-bold">Student ID</th>
+          <th class="px-6 py-5 font-bold">Department</th>
           <th class="px-6 py-5 font-bold text-center">Total Borrowed</th>
           <th class="px-6 py-5 font-bold text-center">Current Books</th>
           <th class="px-6 py-5 font-bold">Total Fines</th>
@@ -109,6 +136,9 @@
               </div>
             </td>
             <td class="px-6 py-4 text-slate-400 font-mono text-xs">{{ student.studentId }}</td>
+            <td class="px-6 py-4 text-center text-slate-200 font-semibold">
+             BSIT
+            </td>
             <td class="px-6 py-4 text-center text-slate-200 font-semibold">
               {{ student.totalBorrowed }}
             </td>

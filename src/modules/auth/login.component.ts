@@ -12,7 +12,7 @@ import { StaffAuthService } from './api.service';
 })
 export class LoginComponent {
   private router = inject(Router);
-  private authService = inject(StaffAuthService); // 4. Inject the service
+  private authService = inject(StaffAuthService);
 
   // 5. Local state for UI feedback
   errorMessage: string | null = null;

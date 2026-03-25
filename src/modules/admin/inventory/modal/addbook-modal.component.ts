@@ -19,6 +19,8 @@ export class AddbookModalComponent implements OnInit {
 
   isLoading = false;
   errorMessage: string | null = null;
+  hasChanges = false;
+  private originalValues: Partial<Book> = {};
 
   registerForm = new FormGroup({
     title: new FormControl('', Validators.required),
@@ -31,6 +33,17 @@ export class AddbookModalComponent implements OnInit {
 
   ngOnInit() {
     if (this.editBookData) {
+      // Store original values
+      this.originalValues = {
+        title: this.editBookData.title,
+        author: this.editBookData.author,
+        isbn: this.editBookData.isbn,
+        category: this.editBookData.category,
+        publication_year: this.editBookData.publication_year,
+        total_copies: this.editBookData.total_copies
+      };
+
+      // Populate form with original values
       this.registerForm.patchValue({
         title: this.editBookData.title,
         author: this.editBookData.author,
@@ -39,10 +52,76 @@ export class AddbookModalComponent implements OnInit {
         publication_year: this.editBookData.publication_year,
         total_copies: this.editBookData.total_copies
       });
+
+      this.registerForm.markAsPristine();
     }
+
+    // Listen to form value changes
+    this.registerForm.valueChanges.subscribe(() => {
+      this.detectChanges();
+    });
   }
 
-  onClose() { this.close.emit(); }
+  private detectChanges(): void {
+    if (!this.editBookData) {
+      this.hasChanges = this.registerForm.valid;
+      return;
+    }
+
+    const formValue = this.registerForm.value;
+    
+    this.hasChanges = 
+      formValue.title !== this.originalValues.title ||
+      formValue.author !== this.originalValues.author ||
+      formValue.isbn !== this.originalValues.isbn ||
+      formValue.category !== this.originalValues.category ||
+      Number(formValue.publication_year) !== this.originalValues.publication_year ||
+      Number(formValue.total_copies) !== this.originalValues.total_copies;
+  }
+
+  private getChangedFields(): Partial<Book> {
+    if (!this.editBookData) {
+      // For new books, return all fields
+      const formValue = this.registerForm.value;
+      return {
+        title: formValue.title!,
+        author: formValue.author!,
+        isbn: formValue.isbn!,
+        category: formValue.category!,
+        publication_year: Number(formValue.publication_year),
+        total_copies: Number(formValue.total_copies),
+      };
+    }
+
+    // For editing, return only changed fields
+    const changedFields: Partial<Book> = {};
+    const formValue = this.registerForm.value;
+
+    if (formValue.title !== this.originalValues.title) {
+      changedFields.title = formValue.title!;
+    }
+    if (formValue.author !== this.originalValues.author) {
+      changedFields.author = formValue.author!;
+    }
+    if (formValue.isbn !== this.originalValues.isbn) {
+      changedFields.isbn = formValue.isbn!;
+    }
+    if (formValue.category !== this.originalValues.category) {
+      changedFields.category = formValue.category!;
+    }
+    if (Number(formValue.publication_year) !== this.originalValues.publication_year) {
+      changedFields.publication_year = Number(formValue.publication_year);
+    }
+    if (Number(formValue.total_copies) !== this.originalValues.total_copies) {
+      changedFields.total_copies = Number(formValue.total_copies);
+    }
+
+    return changedFields;
+  }
+
+  onClose() { 
+    this.close.emit(); 
+  }
 
   onSubmit() {
     if (this.registerForm.invalid) {
@@ -50,33 +129,41 @@ export class AddbookModalComponent implements OnInit {
       return;
     }
 
+    if (this.editBookData && !this.hasChanges) {
+      this.errorMessage = "No changes detected. Please modify at least one field.";
+      return;
+    }
+
     this.isLoading = true;
     this.errorMessage = null;
 
-    const formValue = this.registerForm.value;
-    const payload: Book = {
-      title: formValue.title!,
-      author: formValue.author!,
-      isbn: formValue.isbn!,
-      category: formValue.category!,
-      publication_year: Number(formValue.publication_year),
-      total_copies: Number(formValue.total_copies),
-      available_copies: this.editBookData ? this.editBookData.available_copies : Number(formValue.total_copies),
-      status: this.editBookData ? this.editBookData.status : 'available'
-    };
+    // Get only changed fields for updates, all fields for new books
+    const payload = this.getChangedFields();
+
+    console.log('📤 Sending payload:', payload); // Debug log
 
     const request = this.editBookData?.book_id
       ? this.api.updateBook(this.editBookData.book_id, payload)
-      : this.api.addBook(payload);
+      : this.api.addBook(payload as Book);
 
     request.subscribe({
       next: (res) => {
+        console.log('✅ Book saved successfully:', res);
+        this.isLoading = false;
+        if (!this.editBookData) {
+          this.registerForm.reset({
+            category: 'Technology',
+            publication_year: new Date().getFullYear(),
+            total_copies: 1
+          });
+        }
         this.bookSaved.emit(res);
         this.onClose();
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || "Failed to save record.";
+        console.error('❌ Error saving book:', err);
+        this.errorMessage = err.error?.message || err.error?.errors?.[Object.keys(err.error.errors)[0]]?.[0] || "Failed to save record.";
       }
     });
   }
