@@ -65,26 +65,74 @@
     class="bg-white/3 border border-white/10 rounded-3xl p-6 grid grid-cols-12 gap-8 items-center shadow-2xl backdrop-blur-sm"
   >
     <div class="col-span-3">
-      <label
-        for="categorySelect"
-        class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1"
+      <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1"
+        >Category</label
       >
-        Category
-      </label>
-      <div class="relative group">
-        <select
-          id="categorySelect"
-          class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer transition-all"
-        >
-          <option value="all" class="bg-[#11141d] text-white">All</option>
-          <option value="Technology" class="bg-[#11141d] text-white">Technology</option>
-          <option value="Science" class="bg-[#11141d] text-white">Science</option>
-          <option value="History" class="bg-[#11141d] text-white">History</option>
-          <option value="Fiction" class="bg-[#11141d] text-white">Fiction</option>
-        </select>
+
+      <div class="relative">
         <i
-          class="pi pi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-xs"
+          class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs pointer-events-none"
         ></i>
+        <input
+          type="text"
+          [(ngModel)]="categorySearch"
+          (ngModelChange)="onCategorySearch()"
+          (focus)="showCategoryDropdown = true"
+          placeholder="Search or add category..."
+          class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all placeholder:text-slate-500"
+        />
+
+        <!-- Dropdown -->
+        @if (showCategoryDropdown) {
+          <div
+            class="absolute z-50 mt-1 w-full bg-[#11141d] border border-white/10 rounded-xl shadow-2xl max-h-48 overflow-y-auto"
+          >
+            <!-- "All" option -->
+            <button
+              type="button"
+              (click)="selectCategory(null, 'All')"
+              class="w-full text-left px-4 py-2.5 text-sm hover:bg-white/5 transition-colors"
+              [class]="selectedCategoryId === null ? 'text-indigo-400 font-bold' : 'text-slate-300'"
+            >
+              All Categories
+            </button>
+
+            <!-- Filtered categories -->
+            @for (cat of filteredCategories; track cat.category_id) {
+              <button
+                type="button"
+                (click)="selectCategory(cat.category_id, cat.name)"
+                class="w-full text-left px-4 py-2.5 text-sm hover:bg-white/5 transition-colors"
+                [class]="
+                  selectedCategoryId === cat.category_id
+                    ? 'text-indigo-400 font-bold'
+                    : 'text-slate-300'
+                "
+              >
+                {{ cat.name }}
+              </button>
+            }
+
+            <!-- No match — show Add button -->
+            @if (filteredCategories.length === 0 && categorySearch.trim()) {
+              <div class="px-4 py-3 border-t border-white/5">
+                <p class="text-slate-500 text-xs mb-2">No category found</p>
+                <button
+                  type="button"
+                  (click)="addNewCategory()"
+                  [disabled]="isAddingCategory"
+                  class="w-full flex items-center justify-center gap-2 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/50 text-white rounded-lg text-sm font-bold transition-all active:scale-95"
+                >
+                  <i
+                    class="pi text-xs"
+                    [ngClass]="isAddingCategory ? 'pi-spin pi-spinner' : 'pi-plus'"
+                  ></i>
+                  {{ isAddingCategory ? 'Adding...' : 'Add "' + (categorySearch || '') + '"' }}
+                </button>
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
 
@@ -104,18 +152,6 @@
           "
         >
           Available
-        </button>
-        <button
-          type="button"
-          aria-label="borrowed"
-          (click)="filterByStatus('borrowed')"
-          [class]="
-            selectedStatus === 'borrowed'
-              ? 'flex-1 h-full rounded-lg bg-indigo-600 text-white text-xs font-bold shadow-lg transition-all'
-              : 'flex-1 h-full rounded-lg text-slate-400 hover:text-white text-xs font-bold transition-all'
-          "
-        >
-          Borrowed
         </button>
         <button
           type="button"

@@ -84,29 +84,33 @@
           />
         </div>
 
-        <div class="space-y-2">
-          <label
-            for="classification"
-            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
-            >Category</label
-          >
-          <div class="relative">
-            <select
-              id="classification"
-              formControlName="category"
-              class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer"
-            >
-              <option value="Philosophy" class="bg-[#11141d] text-white">Philosophy</option>
-              <option value="Technology" class="bg-[#11141d] text-white">Technology</option>
-              <option value="Science" class="bg-[#11141d] text-white">Science</option>
-              <option value="History" class="bg-[#11141d] text-white">History</option>
-              <option value="Fiction" class="bg-[#11141d] text-white">Fiction</option>
-            </select>
-            <i
-              class="pi pi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-xs"
-            ></i>
-          </div>
-        </div>
+     <div class="space-y-2">
+  <label
+    for="classification"
+    class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+  >Category</label>
+  <div class="relative">
+    <select
+      id="classification"
+      formControlName="category_id"
+      class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer"
+    >
+      <option [ngValue]="null" disabled class="bg-[#11141d] text-slate-400">
+        Select a category
+      </option>
+      <option
+        *ngFor="let cat of categories"
+        [ngValue]="cat.category_id"
+        class="bg-[#11141d] text-white"
+      >
+        {{ cat.name }}
+      </option>
+    </select>
+    <i
+      class="pi pi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-xs"
+    ></i>
+  </div>
+</div>
 
         <div class="space-y-2">
           <label
