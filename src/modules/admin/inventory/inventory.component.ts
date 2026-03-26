@@ -1,113 +1,50 @@
-import { Component, OnInit, inject, ChangeDetectorRef, HostListener } from "@angular/core";
+import { Component, OnInit, inject, ChangeDetectorRef } from "@angular/core";
 import { CommonModule, NgClass } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Book } from "./book.dto";
 import { AddbookModalComponent } from "./modal/addbook-modal.component";
 import { BookService } from "./book.service";
-import { CategoryService, Category } from "./category.service";
+import { CategoryFilterComponent } from "./category-filter.component";
+import { Category } from "./category.service";
 
 @Component({
   selector: "app-inventory",
   standalone: true,
-  imports: [CommonModule, NgClass, FormsModule, AddbookModalComponent],
+  imports: [CommonModule, NgClass, FormsModule, AddbookModalComponent, CategoryFilterComponent],
   templateUrl: "./inventory.component.html",
 })
 export class InventoryComponent implements OnInit {
   private bookService = inject(BookService);
-  private categoryService = inject(CategoryService);
   private cdr = inject(ChangeDetectorRef);
 
-  // Existing properties
-  searchTerm: string = '';
+  // Book data
   allBooks: Book[] = [];
   filteredBooks: Book[] = [];
+  paginatedBooks: Book[] = [];
   isLoading = true;
+
+  // Filters
+  searchTerm = '';
   selectedStatus: 'available' | 'borrowed' | 'unavailable' = 'available';
+  selectedCategoryId: number | null = null;
+
+  // Pagination
   currentPage = 1;
   pageSize = 10;
   totalPages = 1;
-  paginatedBooks: Book[] = [];
 
-  // Category properties
-  categories: Category[] = [];
-  filteredCategories: Category[] = [];
-  categorySearch = '';
-  selectedCategoryId: number | null = null;
-  showCategoryDropdown = false;
-  isAddingCategory = false;
+  // Modal
+  isModalOpen = false;
+  selectedBook: Book | undefined = undefined;
 
-  // Close dropdown when clicking outside
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event) {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.col-span-3')) {
-      this.showCategoryDropdown = false;
-    }
-  }
+  // Toast
+  toastMessage: { text: string; type: 'success' | 'error' } | null = null;
 
   ngOnInit() {
-    this.loadCategories();
     this.loadBooks();
   }
 
-  loadCategories() {
-    this.categoryService.getCategories().subscribe({
-      next: (categories) => {
-        this.categories = categories;
-        this.filteredCategories = categories;
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Failed to load categories:', err)
-    });
-  }
-
-  onCategorySearch() {
-     if (!this.categorySearch) {
-    this.categorySearch = '';
-  }
-    const term = this.categorySearch.toLowerCase().trim();
-    this.showCategoryDropdown = true;
-
-    if (!term) {
-      this.filteredCategories = this.categories;
-    } else {
-      this.filteredCategories = this.categories.filter(cat =>
-        cat.name.toLowerCase().includes(term)
-      );
-    }
-  }
-
-  selectCategory(id: number | null, name: string) {
-    this.selectedCategoryId = id;
-    this.categorySearch = id === null ? '' : name;
-    this.showCategoryDropdown = false;
-    this.applyFilters();
-  }
-
-addNewCategory() {
-  const name = (this.categorySearch || '').trim();
-  if (!name) return;
-
-  this.isAddingCategory = true;
-
-  this.categoryService.addCategory({ name }).subscribe({
-    next: (response: any) => {
-      // Handle both wrapped and unwrapped responses
-      const newCategory = response.data || response;
-
-      this.categories.push(newCategory);
-      this.selectCategory(newCategory.category_id, newCategory.name);
-      this.isAddingCategory = false;
-      this.showToast(`Category "${name}" added successfully.`, 'success');
-      this.cdr.detectChanges();
-    },
-    error: (err) => {
-      this.isAddingCategory = false;
-      this.showToast(err.error?.message || 'Failed to add category.', 'error');
-      this.cdr.detectChanges();
-    }
-  });
-}
+  // ── Book Loading ──
   loadBooks() {
     this.isLoading = true;
     this.bookService.getBooks().subscribe({
@@ -117,8 +54,7 @@ addNewCategory() {
         this.isLoading = false;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Error loading books:', err);
+      error: () => {
         this.showToast('Failed to load books.', 'error');
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -126,27 +62,42 @@ addNewCategory() {
     });
   }
 
+  // ── Filters ──
   filterByStatus(status: 'available' | 'borrowed' | 'unavailable') {
     this.selectedStatus = status;
+    this.currentPage = 1;
     this.applyFilters();
   }
- private applyFilters() {
+
+  onCategorySelected(categoryId: number | null) {
+    this.selectedCategoryId = categoryId;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  onCategoryAdded(category: Category) {
+    this.showToast(`Category "${category.name}" added successfully.`, 'success');
+  }
+
+  onSearch() {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  private applyFilters() {
     let filtered = this.allBooks;
 
-    // Filter by status
     filtered = filtered.filter(book => {
       if (this.selectedStatus === 'available') return book.status === 'available';
-      else if (this.selectedStatus === 'borrowed') return book.status === 'borrowed';
-      else if (this.selectedStatus === 'unavailable') return book.status === 'unavailable' || book.status === 'maintenance';
+      if (this.selectedStatus === 'borrowed') return book.status === 'borrowed';
+      if (this.selectedStatus === 'unavailable') return book.status === 'unavailable' || book.status === 'maintenance';
       return true;
     });
 
-    // Filter by category
     if (this.selectedCategoryId !== null) {
       filtered = filtered.filter(book => book.category_id === this.selectedCategoryId);
     }
 
-    // Filter by search term
     const term = this.searchTerm.toLowerCase().trim();
     if (term) {
       filtered = filtered.filter(book =>
@@ -165,6 +116,7 @@ addNewCategory() {
     this.paginate();
   }
 
+  // ── Pagination ──
   private paginate() {
     const start = (this.currentPage - 1) * this.pageSize;
     this.paginatedBooks = this.filteredBooks.slice(start, start + this.pageSize);
@@ -186,49 +138,12 @@ addNewCategory() {
     return pages;
   }
 
-  onSearch() {
-    this.applyFilters();
-  }
-
-  get totalRecords(): string {
-    return this.filteredBooks.length.toLocaleString();
-  }
-
+  // ── Book Operations ──
   getAvailabilityControl(book: Book): number {
     if (!book || !book.total_copies) return 0;
     return (book.available_copies / book.total_copies) * 100;
   }
 
-  isModalOpen = false;
-  selectedBook: Book | undefined = undefined;
-
-  toggleModal() {
-    this.isModalOpen = !this.isModalOpen;
-    if (!this.isModalOpen) this.selectedBook = undefined;
-  }
-
-  openEditModal(book: Book) {
-    this.selectedBook = book;
-    this.isModalOpen = true;
-  }
-
-  toastMessage: { text: string; type: 'success' | 'error' } | null = null;
-
-  showToast(text: string, type: 'success' | 'error') {
-    this.toastMessage = { text, type };
-    setTimeout(() => this.toastMessage = null, 3000);
-  }
-
-  onBookSaved(book: Book) {
-    const wasEditing = !!this.selectedBook;
-    this.isModalOpen = false;
-    this.selectedBook = undefined;
-    this.showToast(
-      wasEditing ? 'Book updated successfully!' : 'Book added successfully!',
-      'success'
-    );
-    this.loadBooks();
-  }
 
   toggleStatus(book: Book) {
     const newStatus = book.status === 'available' ? 'maintenance' : 'available';
@@ -238,7 +153,7 @@ addNewCategory() {
           newStatus === 'available' ? 'Book marked as available.' : 'Book marked as unavailable.',
           'success'
         );
-        this.loadBooks(); // reload instead of mutating in place
+        this.loadBooks();
       },
       error: () => this.showToast('Failed to update status.', 'error')
     });
@@ -253,5 +168,33 @@ addNewCategory() {
       },
       error: () => this.showToast('Failed to delete book.', 'error')
     });
+  }
+
+  // ── Modal ──
+  toggleModal() {
+    this.isModalOpen = !this.isModalOpen;
+    if (!this.isModalOpen) this.selectedBook = undefined;
+  }
+
+  openEditModal(book: Book) {
+    this.selectedBook = book;
+    this.isModalOpen = true;
+  }
+
+  onBookSaved() {
+    const wasEditing = !!this.selectedBook;
+    this.isModalOpen = false;
+    this.selectedBook = undefined;
+    this.showToast(
+      wasEditing ? 'Book updated successfully!' : 'Book added successfully!',
+      'success'
+    );
+    this.loadBooks();
+  }
+
+  // ── Toast ──
+  showToast(text: string, type: 'success' | 'error') {
+    this.toastMessage = { text, type };
+    setTimeout(() => this.toastMessage = null, 3000);
   }
 }
