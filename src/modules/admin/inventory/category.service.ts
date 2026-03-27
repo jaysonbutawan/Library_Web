@@ -13,7 +13,7 @@ export interface Category {
 })
 export class CategoryService {
     private http = inject(HttpClient);
-    private readonly API_URL = `${environment.apiUrl}/library/categories`;
+    private readonly API_URL = `${environment.apiUrl}/categories`;
 
     getCategories(): Observable<Category[]> {
         return this.http.get<Category[]>(this.API_URL).pipe(

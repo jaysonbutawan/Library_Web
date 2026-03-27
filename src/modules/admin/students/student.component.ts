@@ -1,18 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-
-interface Student {
-  id: number;
-  name: string;
-  studentId: string;
-  department: string;
-  totalBorrowed: number;
-  currentBooks: number;
-  fines: number;
-  avatar: string;
-}
+import { StudentService } from './student.service';
+import { StudentDto } from './student.dto';
 
 @Component({
   selector: 'app-students',
@@ -21,16 +12,10 @@ interface Student {
   templateUrl: './student.component.html'
 })
 export class StudentsComponent implements OnInit {
-  students: Student[] = [
-    { id: 1, name: 'Sarah J. Rize', studentId: '10032001', department: 'CCS', totalBorrowed: 23, currentBooks: 3, fines: 0, avatar: 'assets/avatars/1.jpg' },
-    { id: 2, name: 'Jayzn Butawan', studentId: '10032003', department: 'COE', totalBorrowed: 20, currentBooks: 3, fines: 15.00, avatar: 'assets/avatars/2.jpg' },
-    { id: 3, name: 'Jayson Butawan', studentId: '10032004', department: 'CBA', totalBorrowed: 23, currentBooks: 3, fines: 15.00, avatar: 'assets/avatars/3.jpg' },
-    { id: 4, name: 'Kathlen Iolarah', studentId: '10032005', department: 'CCS', totalBorrowed: 16, currentBooks: 4, fines: 0, avatar: 'assets/avatars/4.jpg' },
-    { id: 5, name: 'Sarah J. Rize', studentId: '10032006', department: 'CASS', totalBorrowed: 23, currentBooks: 3, fines: 0, avatar: 'assets/avatars/1.jpg' },
-    { id: 6, name: 'Jayzn Butawan', studentId: '10032007', department: 'CED', totalBorrowed: 20, currentBooks: 3, fines: 15.00, avatar: 'assets/avatars/2.jpg' },
-    { id: 7, name: 'Jayson Butawan', studentId: '10032008', department: 'CSM', totalBorrowed: 23, currentBooks: 3, fines: 15.00, avatar: 'assets/avatars/3.jpg' },
-    { id: 8, name: 'aaaaaaaaaaa', studentId: '10032009', department: 'CON', totalBorrowed: 16, currentBooks: 4, fines: 0, avatar: 'assets/avatars/4.jpg' },
-  ];
+  private studentService = inject(StudentService);
+  private router = inject(Router);
+
+  students: StudentDto[] = [];
 
   readonly PAGE_SIZE = 12;
 
@@ -39,17 +24,36 @@ export class StudentsComponent implements OnInit {
   departmentFilter = 'all';
   currentPage = 1;
 
-  filteredStudents: Student[] = [];
-  pagedStudents: Student[] = [];
+  filteredStudents: StudentDto[] = [];
+  pagedStudents: StudentDto[] = [];
   totalPages = 1;
   visiblePages: (number | string)[] = [];
   rangeStart = 0;
   rangeEnd = 0;
 
-  constructor(private router: Router) {}
+  isLoading = true;
+  errorMessage = '';
 
   ngOnInit() {
-    this.applyFilters();
+    this.loadStudents();
+  }
+
+  loadStudents() {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.studentService.getStudents().subscribe({
+      next: (data) => {
+        this.students = data;
+        this.applyFilters();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to load students';
+        this.isLoading = false;
+        console.error(err);
+      },
+    });
   }
 
   navigateToDetails(id: number) {
@@ -66,8 +70,8 @@ export class StudentsComponent implements OnInit {
 
     this.filteredStudents = this.students.filter(s => {
       const matchesSearch = !query ||
-        s.name.toLowerCase().includes(query) ||
-        s.studentId.toLowerCase().includes(query);
+        s.full_name.toLowerCase().includes(query) ||
+        s.student_id.toString().toLowerCase().includes(query);
 
       const matchesStatus =
         this.statusFilter === 'all' ||

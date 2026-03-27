@@ -11,11 +11,11 @@ import { throwError } from 'rxjs';
 })
 export class BookService {
   private http = inject(HttpClient);
-  private readonly API_URL = `${environment.apiUrl}/library/books`;
+  private readonly API_URL = `${environment.apiUrl}/books`;
 
  getBooks(): Observable<Book[]> {
     console.log('📡 Fetching books from:', this.API_URL); // Log before request
-    
+
     return this.http.get<Book[]>(this.API_URL).pipe(
       tap((books) => {
         if (books && books.length > 0) {

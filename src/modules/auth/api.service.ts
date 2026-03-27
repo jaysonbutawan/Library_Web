@@ -10,11 +10,11 @@ import { HttpHeaders } from '@angular/common/http';
 })
 export class StaffAuthService {
   private http = inject(HttpClient);
-  private readonly API_URL = `${environment.apiUrl}/library/staff`;
+  private readonly API_URL = `${environment.apiUrl}/staff`;
 
   login(credentials: any): Observable<LoginResponse> {
     const headers = new HttpHeaders({
-  'Accept': 'application/json' 
+  'Accept': 'application/json'
 });
     return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials).pipe(
       tap(response => {
