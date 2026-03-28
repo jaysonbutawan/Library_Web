@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +14,7 @@ import { StudentDto } from './student.dto';
 export class StudentsComponent implements OnInit {
   private studentService = inject(StudentService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   students: StudentDto[] = [];
 
@@ -47,10 +48,12 @@ export class StudentsComponent implements OnInit {
         this.students = data;
         this.applyFilters();
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.errorMessage = 'Failed to load students';
         this.isLoading = false;
+        this.cdr.detectChanges();
         console.error(err);
       },
     });
