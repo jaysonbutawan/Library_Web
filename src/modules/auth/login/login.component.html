@@ -1,0 +1,131 @@
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+  <!-- Header -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold tracking-tight">Sign In</h2>
+    <p class="text-slate-400 text-sm mt-1">Enter your credentials to continue</p>
+  </div>
+
+  <!-- Email -->
+  <div class="space-y-2">
+    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+      Email Address
+    </label>
+    <div class="relative group">
+      <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500 group-focus-within:text-indigo-400 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      </span>
+      <input
+        type="email"
+        formControlName="email"
+        placeholder="name@company.com"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 hover:border-white/20 transition-all placeholder:text-slate-600"
+        [class.border-red-500]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+      />
+    </div>
+    @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+      <p class="text-[10px] text-red-400 pl-1">Please enter a valid email address.</p>
+    }
+  </div>
+
+  <!-- Password -->
+  <div class="space-y-2">
+    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+      Password
+    </label>
+    <div class="relative group">
+      <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500 group-focus-within:text-indigo-400 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+      </span>
+      <input
+        [type]="showPassword ? 'text' : 'password'"
+        formControlName="password"
+        placeholder="••••••••"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-12 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 hover:border-white/20 transition-all"
+        [class.border-red-500]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+      />
+      <button
+        type="button"
+        title="{{ showPassword ? 'Hide password' : 'Show password' }}"
+        (click)="showPassword = !showPassword"
+        class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+      >
+        @if (!showPassword) {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+          </svg>
+        }
+      </button>
+    </div>
+    @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+      <p class="text-[10px] text-red-400 pl-1">Password is required.</p>
+    }
+  </div>
+
+  <!-- Remember Me -->
+  <div class="flex items-center">
+    <label class="flex items-center space-x-2 cursor-pointer group">
+      <input
+        type="checkbox"
+        formControlName="remember"
+        class="w-4 h-4 rounded border-white/10 bg-white/5 accent-indigo-500 cursor-pointer"
+      />
+      <span class="text-xs text-slate-400 group-hover:text-slate-300 transition-colors">Remember Me</span>
+    </label>
+  </div>
+
+  <!-- Error message -->
+  @if (errorMessage) {
+    <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3">
+      <i class="pi pi-exclamation-circle text-red-500 shrink-0"></i>
+      <span class="text-xs font-bold text-red-400">{{ errorMessage }}</span>
+    </div>
+  }
+
+  <!-- Submit -->
+  <button
+    type="submit"
+    [disabled]="isLoading"
+    class="w-full relative group overflow-hidden bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition-all duration-200 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 hover:-translate-y-0.5 active:scale-[0.98]"
+  >
+    @if (!isLoading) {
+      <span>Sign In</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+      </svg>
+    } @else {
+      <i class="pi pi-spin pi-spinner text-xl mr-2"></i>
+      <span class="tracking-widest uppercase text-[10px]">Authenticating...</span>
+      <div class="absolute bottom-0 left-0 h-0.5 w-full bg-indigo-300 animate-pulse"></div>
+    }
+  </button>
+
+  <!-- Divider -->
+  <div class="relative py-2 flex items-center">
+    <div class="grow border-t border-white/10"></div>
+    <span class="shrink mx-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">or</span>
+    <div class="grow border-t border-white/10"></div>
+  </div>
+
+  <!-- Switch to Register -->
+  <p class="text-center text-xs text-slate-500">
+    New staff member?
+    <button
+      type="button"
+      (click)="switchToRegister.emit()"
+      class="text-indigo-400 font-bold hover:text-indigo-300 hover:underline transition-colors ml-1"
+    >
+      Create an account
+    </button>
+  </p>
+
+</form>

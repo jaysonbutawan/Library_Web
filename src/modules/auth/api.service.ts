@@ -2,8 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment.development';
-import { LoginResponse } from './login.dto';
-import { HttpHeaders } from '@angular/common/http';
+import { LoginResponse, RegisterResponse } from './login.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +12,6 @@ export class StaffAuthService {
   private readonly API_URL = `${environment.apiUrl}/staff`;
 
   login(credentials: any): Observable<LoginResponse> {
-    const headers = new HttpHeaders({
-  'Accept': 'application/json'
-});
     return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials).pipe(
       tap(response => {
         if (response.success && response.token) {
@@ -24,6 +20,10 @@ export class StaffAuthService {
         }
       })
     );
+  }
+
+  register(data: any): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.API_URL}/register`, data);
   }
 
   logout(): void {

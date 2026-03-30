@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from '../modules/auth/login.component';
+import { AuthLayoutComponent } from '../modules/auth/auth-layout/auth-layout.component';
 import { LayoutComponent } from '../modules/admin/layout.components.';
 import { InventoryComponent } from '../modules/admin/inventory/inventory.component';
 import { CirculationComponent } from '../modules/admin/circulations/circulation.component';
@@ -7,7 +7,7 @@ import { StudentsComponent } from '../modules/admin/students/student.component';
 import { StudentDetailComponent } from '../modules/admin/students/student-detail.component';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: AuthLayoutComponent },
   {
     path: 'admin',
     component: LayoutComponent,
