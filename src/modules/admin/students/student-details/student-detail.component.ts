@@ -1,5 +1,8 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, OnInit, inject, ChangeDetectorRef } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { StudentService } from "../student.service";
+import { StudentDto } from "../student.dto";
 
 export interface BorrowHistory {
   id: number;
@@ -19,20 +22,17 @@ export interface BorrowHistory {
   selector: 'app-student-detail',
   imports: [CommonModule],
   templateUrl: './student-detail.component.html',
+  styleUrl: './student-detail.component.css'
 })
-export class StudentDetailComponent {
+export class StudentDetailComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private studentService = inject(StudentService);
+  private cdr = inject(ChangeDetectorRef); // 2. Inject it
 
-  student = {
-    name: 'Julian Thorne',
-    avatar: 'assets/avatars/julian.jpg',
-    studentId: 'STU-8829-2024',
-    level: 'Graduate Student',
-    faculty: 'Faculty of Letters',
-    balance: 14.50,
-    activeBorrows: 3,
-    totalBorrowed: 12,
-    joinDate: 'September 2023'
-  };
+  student: StudentDto | null = null;
+  isLoading = true;
+  errorMessage = '';
 
   history: BorrowHistory[] = [
     {
@@ -64,6 +64,41 @@ export class StudentDetailComponent {
 
   readonly FINE_PER_DAY = 5;
 
+  ngOnInit() {
+    const navigation = this.router.currentNavigation();
+    const passedStudent = navigation?.extras?.state?.['student'];
+
+    if (passedStudent) {
+      this.student = passedStudent;
+      this.isLoading = false;
+      this.cdr.detectChanges(); // 3. Force check if passed via state
+      return;
+    }
+
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (!id) {
+      this.router.navigate(['/admin/students']);
+      return;
+    }
+
+    this.studentService.getStudentById(id).subscribe({
+      next: (data) => {
+        this.student = data;
+        this.isLoading = false;
+        this.cdr.detectChanges(); // 4. Force check after API call
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to load student';
+        this.isLoading = false;
+        this.cdr.detectChanges(); // 5. Force check on error
+      }
+    });
+  }
+
+  goBack() {
+    this.router.navigate(['/admin/students']);
+  }
+
   openReturnConfirm(item: BorrowHistory): void {
     this.selectedReturnItem = item;
     this.showReturnModal = true;
@@ -88,7 +123,6 @@ export class StudentDetailComponent {
       : 0;
     const calculatedFine = overdueDays * this.FINE_PER_DAY;
 
-    // Simulate API call — replace setTimeout with your real service call
     setTimeout(() => {
       const index = this.history.findIndex(h => h.id === item.id);
       if (index !== -1) {
@@ -103,9 +137,13 @@ export class StudentDetailComponent {
           })}`
         };
 
-        // Update student stats
-        this.student.activeBorrows = Math.max(0, this.student.activeBorrows - 1);
-        this.student.balance += calculatedFine;
+        if (this.student) {
+          this.student = {
+            ...this.student,
+            current_books: Math.max(0, this.student.current_books - 1),
+            fines: this.student.fines + calculatedFine
+          };
+        }
       }
 
       this.returnSuccessId = item.id;

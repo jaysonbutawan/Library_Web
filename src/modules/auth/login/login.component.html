@@ -1,4 +1,4 @@
-<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+<form [formGroup]="loginForm" class="space-y-6">
 
   <!-- Header -->
   <div class="mb-8">
@@ -20,7 +20,7 @@
       <input
         type="email"
         formControlName="email"
-        placeholder="name@company.com"
+        placeholder="name@school.com"
         class="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 hover:border-white/20 transition-all placeholder:text-slate-600"
         [class.border-red-500]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
       />
@@ -50,7 +50,6 @@
       />
       <button
         type="button"
-        title="{{ showPassword ? 'Hide password' : 'Show password' }}"
         (click)="showPassword = !showPassword"
         class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
       >
@@ -79,53 +78,78 @@
         formControlName="remember"
         class="w-4 h-4 rounded border-white/10 bg-white/5 accent-indigo-500 cursor-pointer"
       />
-      <span class="text-xs text-slate-400 group-hover:text-slate-300 transition-colors">Remember Me</span>
+      <span class="text-xs text-slate-400 group-hover:text-slate-300 transition-colors">Remember me</span>
     </label>
   </div>
 
-  <!-- Error message -->
+  <!-- Error Message -->
   @if (errorMessage) {
     <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3">
-      <i class="pi pi-exclamation-circle text-red-500 shrink-0"></i>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
       <span class="text-xs font-bold text-red-400">{{ errorMessage }}</span>
     </div>
   }
 
-  <!-- Submit -->
+  <!-- Student Sign In -->
   <button
-    type="submit"
+    type="button"
+    (click)="onStudentLogin()"
     [disabled]="isLoading"
-    class="w-full relative group overflow-hidden bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition-all duration-200 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 hover:-translate-y-0.5 active:scale-[0.98]"
+    class="w-full relative group overflow-hidden bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 hover:-translate-y-0.5 active:scale-[0.98]"
   >
-    @if (!isLoading) {
-      <span>Sign In</span>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+    @if (isLoading) {
+      <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
       </svg>
-    } @else {
-      <i class="pi pi-spin pi-spinner text-xl mr-2"></i>
       <span class="tracking-widest uppercase text-[10px]">Authenticating...</span>
       <div class="absolute bottom-0 left-0 h-0.5 w-full bg-indigo-300 animate-pulse"></div>
+    } @else {
+      <!-- Student icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.083 12.083 0 0121 13c0 4.418-4.03 8-9 8s-9-3.582-9-8c0-.85.12-1.67.34-2.44L12 14z" />
+      </svg>
+      <span>Sign In as Student</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+      </svg>
     }
   </button>
 
   <!-- Divider -->
-  <div class="relative py-2 flex items-center">
+  <div class="relative py-1 flex items-center">
     <div class="grow border-t border-white/10"></div>
     <span class="shrink mx-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">or</span>
     <div class="grow border-t border-white/10"></div>
   </div>
 
-  <!-- Switch to Register -->
-  <p class="text-center text-xs text-slate-500">
-    New staff member?
-    <button
-      type="button"
-      (click)="switchToRegister.emit()"
-      class="text-indigo-400 font-bold hover:text-indigo-300 hover:underline transition-colors ml-1"
-    >
-      Create an account
-    </button>
-  </p>
+  <!-- Admin Sign In -->
+  <button
+    type="button"
+    (click)="onAdminLogin()"
+    [disabled]="isLoading"
+    class="w-full relative group overflow-hidden bg-slate-700/80 hover:bg-slate-600 border border-white/10 hover:border-white/20 disabled:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
+  >
+    @if (isLoading) {
+      <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+      </svg>
+      <span class="tracking-widest uppercase text-[10px]">Authenticating...</span>
+      <div class="absolute bottom-0 left-0 h-0.5 w-full bg-slate-400 animate-pulse"></div>
+    } @else {
+      <!-- Shield / admin icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+      <span>Sign In as Administrator</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+      </svg>
+    }
+  </button>
 
 </form>

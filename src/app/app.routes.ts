@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
 import { AuthLayoutComponent } from '../modules/auth/auth-layout/auth-layout.component';
-import { LayoutComponent } from '../modules/admin/layout.components.';
+import { LayoutComponent } from '../modules/admin/main-layout/layout.components.';
 import { InventoryComponent } from '../modules/admin/inventory/inventory.component';
 import { CirculationComponent } from '../modules/admin/circulations/circulation.component';
 import { StudentsComponent } from '../modules/admin/students/student.component';
-import { StudentDetailComponent } from '../modules/admin/students/student-detail.component';
+import { StudentDetailComponent } from '../modules/admin/students/student-details/student-detail.component';
 
 export const routes: Routes = [
   { path: 'login', component: AuthLayoutComponent },

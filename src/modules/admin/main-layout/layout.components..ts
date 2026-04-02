@@ -1,6 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SidebarComponent } from '../admin/sidebar/sidebar.component';
+import { SidebarComponent } from '../../admin/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 
 @Component({

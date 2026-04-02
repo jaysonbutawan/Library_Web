@@ -15,48 +15,51 @@ export class StudentsComponent implements OnInit {
   private studentService = inject(StudentService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
-
   students: StudentDto[] = [];
 
-  readonly PAGE_SIZE = 12;
+  nextCursor: string | null = null;
+  prevCursor: string | null = null;
 
-  searchQuery = '';
-  statusFilter = 'all';
-  departmentFilter = 'all';
-  currentPage = 1;
-
-  filteredStudents: StudentDto[] = [];
-  pagedStudents: StudentDto[] = [];
-  totalPages = 1;
-  visiblePages: (number | string)[] = [];
-  rangeStart = 0;
-  rangeEnd = 0;
-
-  isLoading = true;
+  isLoading = false;
   errorMessage = '';
+
 
   ngOnInit() {
     this.loadStudents();
   }
 
-  loadStudents() {
+  loadStudents(cursor: string | null = null) {
     this.isLoading = true;
-    this.errorMessage = '';
 
-    this.studentService.getStudents().subscribe({
-      next: (data) => {
-        this.students = data;
-        this.applyFilters();
+    this.studentService.getStudents(cursor).subscribe({
+      next: (res) => {
+        console.log('📡 API Response:', res);
+
+        this.students = res.data;
+        this.nextCursor = res.meta.next_cursor;
+        this.prevCursor = res.meta.prev_cursor;
+
         this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         this.errorMessage = 'Failed to load students';
         this.isLoading = false;
-        this.cdr.detectChanges();
         console.error(err);
-      },
+      }
     });
+  }
+
+  nextPage() {
+    if (this.nextCursor) {
+      this.loadStudents(this.nextCursor);
+    }
+  }
+
+  prevPage() {
+    if (this.prevCursor) {
+      this.loadStudents(this.prevCursor);
+    }
   }
 
   navigateToDetails(id: number) {
@@ -64,65 +67,32 @@ export class StudentsComponent implements OnInit {
   }
 
   onSearch() {
-    this.currentPage = 1;
-    this.applyFilters();
+
   }
 
   applyFilters() {
-    const query = this.searchQuery.toLowerCase().trim();
+    // const query = this.searchQuery.toLowerCase().trim();
 
-    this.filteredStudents = this.students.filter(s => {
-      const matchesSearch = !query ||
-        s.full_name.toLowerCase().includes(query) ||
-        s.student_id.toString().toLowerCase().includes(query);
+    // this.filteredStudents = this.students.filter(s => {
+    //   const matchesSearch = !query ||
+    //     s.full_name.toLowerCase().includes(query) ||
+    //     s.student_id.toString().toLowerCase().includes(query);
 
-      const matchesStatus =
-        this.statusFilter === 'all' ||
-        (this.statusFilter === 'fines' && s.fines > 0) ||
-        (this.statusFilter === 'clear' && s.fines === 0);
+    //   const matchesStatus =
+    //     this.statusFilter === 'all' ||
+    //     (this.statusFilter === 'fines' && s.fines > 0) ||
+    //     (this.statusFilter === 'clear' && s.fines === 0);
 
-      const matchesDepartment =
-        this.departmentFilter === 'all' ||
-        s.department === this.departmentFilter;
+    //   const matchesDepartment =
+    //     this.departmentFilter === 'all' ||
+    //     s.department === this.departmentFilter;
 
-      return matchesSearch && matchesStatus && matchesDepartment;
-    });
+    //   return matchesSearch && matchesStatus && matchesDepartment;
+    // });
 
-    this.totalPages = Math.max(1, Math.ceil(this.filteredStudents.length / this.PAGE_SIZE));
-    this.currentPage = Math.min(this.currentPage, this.totalPages);
-    this.updatePage();
+    // this.totalPages = Math.max(1, Math.ceil(this.filteredStudents.length / this.PAGE_SIZE));
+    // this.currentPage = Math.min(this.currentPage, this.totalPages);
+    // this.updatePage();
   }
 
-  goToPage(page: number) {
-    if (page < 1 || page > this.totalPages) return;
-    this.currentPage = page;
-    this.updatePage();
-  }
-
-  updatePage() {
-    const start = (this.currentPage - 1) * this.PAGE_SIZE;
-    const end = start + this.PAGE_SIZE;
-    this.pagedStudents = this.filteredStudents.slice(start, end);
-    this.rangeStart = this.filteredStudents.length === 0 ? 0 : start + 1;
-    this.rangeEnd = Math.min(end, this.filteredStudents.length);
-    this.buildVisiblePages();
-  }
-
-  buildVisiblePages() {
-    const pages: (number | string)[] = [];
-    const total = this.totalPages;
-    const cur = this.currentPage;
-
-    if (total <= 7) {
-      for (let i = 1; i <= total; i++) pages.push(i);
-    } else {
-      pages.push(1);
-      if (cur > 3) pages.push('...');
-      for (let i = Math.max(2, cur - 1); i <= Math.min(total - 1, cur + 1); i++) pages.push(i);
-      if (cur < total - 2) pages.push('...');
-      pages.push(total);
-    }
-
-    this.visiblePages = pages;
-  }
 }

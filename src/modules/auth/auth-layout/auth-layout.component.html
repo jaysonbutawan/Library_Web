@@ -1,93 +1,38 @@
-<div
-  class="min-h-screen bg-[#0b0e14] bg-gradient-to-br from-[#0b0e14] via-[#1a1333] to-[#0b0e14] flex items-center justify-center p-6 font-sans text-white overflow-hidden"
->
+<div class="min-h-screen bg-[#0b0e14] bg-gradient-to-br from-[#0b0e14] via-[#1a1333] to-[#0b0e14] flex items-center justify-center p-6 font-sans text-white overflow-hidden">
   <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-    <!-- ─── Left Branding Panel ─────────────────────────────────────── -->
-    <div class="space-y-8 lg:-ml-8">
-
-      <div
-        class="inline-flex items-center whitespace-nowrap px-7 py-4 rounded-full bg-white/5 border border-white/10 text-2xl font-bold tracking-widest uppercase text-indigo-400"
-      >
-        <span class="w-4 h-4 rounded-full bg-indigo-500 mr-3 shrink-0 animate-pulse"></span>
-        Secure Library Management System
+    <div class="space-y-8 lg:pr-12">
+      <div class="inline-flex items-center px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm font-bold tracking-widest uppercase text-indigo-400">
+        <span class="w-2 h-2 rounded-full bg-indigo-500 mr-3 animate-pulse"></span>
+        Secure Library System
       </div>
 
-      <!-- Dynamic headline ─ fades when switching views -->
-      <div class="relative overflow-hidden" style="min-height: 160px;">
-        <!-- Login copy -->
-        <div
-          class="space-y-4 transition-all duration-500"
-          [style.opacity]="showLogin ? '1' : '0'"
-          [style.transform]="showLogin ? 'translateY(0)' : 'translateY(-24px)'"
-          [style.position]="showLogin ? 'relative' : 'absolute'"
-          [style.pointer-events]="showLogin ? 'auto' : 'none'"
-        >
-          <h1 class="text-6xl font-bold tracking-tight leading-tight">
-            Welcome back<span class="text-indigo-500">.</span>
-          </h1>
-          <p class="text-slate-400 text-lg max-w-md leading-relaxed">
-            Access your encrypted digital assets with enterprise‑grade security protocols.
-          </p>
-        </div>
-
-        <!-- Register copy -->
-        <div
-          class="space-y-4 transition-all duration-500"
-          [style.opacity]="showLogin ? '0' : '1'"
-          [style.transform]="showLogin ? 'translateY(24px)' : 'translateY(0)'"
-          [style.position]="showLogin ? 'absolute' : 'relative'"
-          [style.pointer-events]="showLogin ? 'none' : 'auto'"
-          style="top: 0;"
-        >
-          <h1 class="text-6xl font-bold tracking-tight leading-tight">
-            Join the team<span class="text-indigo-500">.</span>
-          </h1>
-          <p class="text-slate-400 text-lg max-w-md leading-relaxed">
-            Create your secure staff account and start managing library resources today.
-          </p>
-        </div>
+      <div class="space-y-4">
+        <h1 class="text-6xl font-bold tracking-tight leading-tight">
+          Welcome back<span class="text-indigo-500">.</span>
+        </h1>
+        <p class="text-slate-400 text-lg max-w-md leading-relaxed">
+          Access your encrypted digital assets with enterprise‑grade security protocols.
+        </p>
       </div>
 
-      <!-- Avatar row -->
-      <div class="flex items-center space-x-4 pt-4">
+      <div class="flex items-center gap-4 pt-4">
         <div class="flex -space-x-3">
-          <div
-            class="w-10 h-10 rounded-full border-2 border-[#0b0e14] bg-slate-800 flex items-center justify-center text-[10px] font-bold"
-          >JS</div>
-          <div
-            class="w-10 h-10 rounded-full border-2 border-[#0b0e14] bg-slate-700 flex items-center justify-center text-[10px] font-bold"
-          >RK</div>
-          <div
-            class="w-10 h-10 rounded-full border-2 border-[#0b0e14] bg-slate-600 flex items-center justify-center text-[10px] font-bold"
-          >ML</div>
+          <div class="w-10 h-10 rounded-full border-2 border-[#0b0e14] bg-slate-800 flex items-center justify-center text-[10px] font-bold ring-1 ring-white/10">JS</div>
+          <div class="w-10 h-10 rounded-full border-2 border-[#0b0e14] bg-slate-700 flex items-center justify-center text-[10px] font-bold ring-1 ring-white/10">RK</div>
+          <div class="w-10 h-10 rounded-full border-2 border-[#0b0e14] bg-slate-600 flex items-center justify-center text-[10px] font-bold ring-1 ring-white/10">ML</div>
         </div>
-        <p class="text-sm text-slate-500 font-medium">Trusted by 25,000+ teams globally</p>
+        <p class="text-sm text-slate-500">Trusted by <span class="text-slate-300 font-medium">25,000+</span> teams globally</p>
       </div>
     </div>
 
-    <!-- ─── Right Card with Sliding Forms ─────────────────────────── -->
-    <div class="relative overflow-hidden rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl">
-      <!--
-        The inner wrapper is 200% wide so both form panels sit side‑by‑side.
-        Each panel is w-1/2 of the wrapper = 100% of the visible card.
-        Sliding the wrapper left by 50% reveals the registration form.
-      -->
-      <div
-        class="flex w-[200%]"
-        style="transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);"
-        [style.transform]="showLogin ? 'translateX(0%)' : 'translateX(-50%)'"
-      >
-        <!-- Login panel -->
-        <div class="w-1/2 shrink-0 p-10">
-          <app-login (switchToRegister)="switchView(false)"></app-login>
-        </div>
-
-        <!-- Registration panel -->
-        <div class="w-1/2 shrink-0 p-10">
-          <app-registration (switchToLogin)="switchView(true)"></app-registration>
-        </div>
+    <div class="relative bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-[2.5rem] overflow-hidden">
+      <div class="p-10 md:p-14">
+        <app-login></app-login>
       </div>
+
+      <div class="absolute -top-24 -left-24 w-48 h-48 bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+      <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-purple-500/10 blur-[100px] rounded-full pointer-events-none"></div>
     </div>
 
   </div>

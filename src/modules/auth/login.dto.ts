@@ -7,10 +7,13 @@ export interface User {
 }
 
 export interface LoginResponse {
-  success: boolean;
+  success:  boolean;
   message?: string;
-  user?: User;
-  token?: string;
+  data?: {
+    token?:       string;
+    user?:        any;
+    unavailable?: boolean;
+  };
 }
 
 export interface RegisterResponse {

@@ -12,8 +12,14 @@ export class StudentService {
   private http = inject(HttpClient);
   private readonly API_URL = `${environment.apiUrl}/students`;
 
-  getStudents(): Observable<StudentDto[]> {
-    return this.http.get<StudentDto[]>(this.API_URL);
+  getStudents(cursor: string | null = null): Observable<any> {
+    let url = this.API_URL;
+
+    if (cursor) {
+      url += `?cursor=${cursor}`;
+    }
+
+    return this.http.get<any>(url);
   }
 
   getStudentById(id: number): Observable<StudentDto> {
