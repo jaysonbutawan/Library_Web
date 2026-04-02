@@ -60,21 +60,21 @@
 
   <!-- ── MOBILE: Card List (hidden on md+) ── -->
   <div class="flex flex-col gap-3 md:hidden">
-    @for (request of borrowRequests; track request.id) {
+    @for (request of borrowRequests; track request.request_id) {
       <div class="bg-[#11141d]/50 border border-white/5 rounded-2xl p-4 backdrop-blur-md">
         <div class="flex items-center gap-3 mb-3">
           <div
             class="w-9 h-9 rounded-full bg-linear-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white shrink-0"
           >
-            {{ request.studentInitials }}
+            {{ getInitials(request.full_name) }}
           </div>
           <div>
-            <p class="font-bold text-white text-sm">{{ request.studentName }}</p>
-            <p class="text-slate-400 text-xs">{{ request.bookTitle }}</p>
+            <p class="font-bold text-white text-sm">{{ request.full_name }}</p>
+            <p class="text-slate-400 text-xs">{{ request.book?.title }}</p>
           </div>
         </div>
         <div class="flex items-center justify-between mb-3">
-          <span class="font-mono text-xs text-slate-500">{{ request.date }}</span>
+          <span class="font-mono text-xs text-slate-500">{{ request.requested_at }}</span>
           <span
             [ngClass]="{
               'bg-amber-500/10 text-amber-500 border-amber-500/20': request.status === 'Pending',
@@ -147,21 +147,21 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-white/5 text-sm">
-          @for (request of borrowRequests; track request.id) {
+          @for (request of borrowRequests; track request.request_id) {
             <tr class="hover:bg-white/2 transition-colors">
               <td class="px-8 py-5">
                 <div class="flex items-center gap-3">
                   <div
                     class="w-8 h-8 rounded-full bg-linear-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-[10px] font-bold shrink-0"
                   >
-                    {{ request.studentInitials }}
+                    {{ getInitials(request.full_name) }}
                   </div>
-                  <span class="font-bold text-white">{{ request.studentName }}</span>
+                  <span class="font-bold text-white">{{ request.full_name }}</span>
                 </div>
               </td>
-              <td class="px-8 py-5 text-slate-300 font-medium">{{ request.bookTitle }}</td>
+              <td class="px-8 py-5 text-slate-300 font-medium">{{ request.book?.title }}</td>
               <td class="px-8 py-5 text-center text-slate-500 font-mono text-xs">
-                {{ request.date }}
+                {{ request.requested_at }}
               </td>
               <td class="px-8 py-5">
                 <div class="flex justify-center">
@@ -276,8 +276,8 @@
       <h3 class="text-2xl font-bold text-white tracking-tight">Confirm Approval</h3>
       <p class="text-slate-400 mt-2 leading-relaxed">
         Are you sure you want to approve
-        <strong class="text-white">{{ selectedRequest?.studentName }}</strong
-        >'s request for <strong class="text-white">"{{ selectedRequest?.bookTitle }}"</strong>?
+        <strong class="text-white">{{ selectedRequest?.full_name }}</strong
+        >'s request for <strong class="text-white">"{{ selectedRequest?.book?.title }}"</strong>?
       </p>
       <div class="mt-8 flex gap-4">
         <button

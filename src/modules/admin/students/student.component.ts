@@ -15,6 +15,8 @@ export class StudentsComponent implements OnInit {
   private studentService = inject(StudentService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+
+
   students: StudentDto[] = [];
 
   nextCursor: string | null = null;
@@ -31,7 +33,12 @@ export class StudentsComponent implements OnInit {
   loadStudents(cursor: string | null = null) {
     this.isLoading = true;
 
-    this.studentService.getStudents(cursor).subscribe({
+    this.studentService.getStudents(
+      cursor,
+      this.searchQuery,
+      this.departmentFilter,
+      this.statusFilter
+    ).subscribe({
       next: (res) => {
         console.log('📡 API Response:', res);
 
@@ -45,7 +52,6 @@ export class StudentsComponent implements OnInit {
       error: (err) => {
         this.errorMessage = 'Failed to load students';
         this.isLoading = false;
-        console.error(err);
       }
     });
   }
@@ -65,34 +71,20 @@ export class StudentsComponent implements OnInit {
   navigateToDetails(id: number) {
     this.router.navigate(['/admin/students', id]);
   }
+onSearch() {
+  this.loadStudents();
+}
+  statusFilter: 'all' | 'clear' | 'fines' = 'all';
+  searchQuery: string = '';
 
-  onSearch() {
-
+  setStatusFilter(status: 'all' | 'clear' | 'fines') {
+    this.statusFilter = status;
+    this.onSearch();
   }
+  departmentFilter: string = '';
 
-  applyFilters() {
-    // const query = this.searchQuery.toLowerCase().trim();
-
-    // this.filteredStudents = this.students.filter(s => {
-    //   const matchesSearch = !query ||
-    //     s.full_name.toLowerCase().includes(query) ||
-    //     s.student_id.toString().toLowerCase().includes(query);
-
-    //   const matchesStatus =
-    //     this.statusFilter === 'all' ||
-    //     (this.statusFilter === 'fines' && s.fines > 0) ||
-    //     (this.statusFilter === 'clear' && s.fines === 0);
-
-    //   const matchesDepartment =
-    //     this.departmentFilter === 'all' ||
-    //     s.department === this.departmentFilter;
-
-    //   return matchesSearch && matchesStatus && matchesDepartment;
-    // });
-
-    // this.totalPages = Math.max(1, Math.ceil(this.filteredStudents.length / this.PAGE_SIZE));
-    // this.currentPage = Math.min(this.currentPage, this.totalPages);
-    // this.updatePage();
+  setDepartmentFilter(department: string) {
+    this.departmentFilter = department;
+    this.onSearch();
   }
-
 }

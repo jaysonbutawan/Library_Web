@@ -1,34 +1,41 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
-
+import { Component, OnInit, inject } from "@angular/core";
+import { BorrowRequestDto } from "./circulation.dto";
+import { CirculationService } from "./circulation.service";
 
 @Component({
-    selector: "app-circulation",
-    imports: [CommonModule],
-    standalone : true,
-    templateUrl: "./circulation.component.html",
-
+  selector: "app-circulation",
+  standalone: true,
+  imports: [CommonModule], // ❌ remove service here
+  templateUrl: "./circulation.component.html",
 })
-export class CirculationComponent {
-   showConfirm = false;
-  selectedRequest: any = null;
+export class CirculationComponent implements OnInit {
 
-  borrowRequests = [
-    { id: 1, studentName: 'Marcus Thorne', studentInitials: 'MT', bookTitle: 'The Iron Protocol', date: '2026-03-15', status: 'Pending' },
-    { id: 2, studentName: 'Sarah Jenkins', studentInitials: 'SJ', bookTitle: 'Visions of Void', date: '2026-03-14', status: 'Approved' },
-    { id: 3, studentName: 'Jayson Butawan', studentInitials: 'JB', bookTitle: 'Angular Masterclass', date: '2026-03-14', status: 'Pending' },
-    { id: 4, studentName: 'Elena Kostas', studentInitials: 'EK', bookTitle: 'Digital Ethics', date: '2026-03-12', status: 'Rejected' },
-     { id: 1, studentName: 'Marcus Thorne', studentInitials: 'MT', bookTitle: 'The Iron Protocol', date: '2026-03-15', status: 'Pending' },
-    { id: 2, studentName: 'Sarah Jenkins', studentInitials: 'SJ', bookTitle: 'Visions of Void', date: '2026-03-14', status: 'Approved' },
-    { id: 3, studentName: 'Jayson Butawan', studentInitials: 'JB', bookTitle: 'Angular Masterclass', date: '2026-03-14', status: 'Pending' },
-    { id: 4, studentName: 'Elena Kostas', studentInitials: 'EK', bookTitle: 'Digital Ethics', date: '2026-03-12', status: 'Rejected' },
-     { id: 1, studentName: 'Marcus Thorne', studentInitials: 'MT', bookTitle: 'The Iron Protocol', date: '2026-03-15', status: 'Pending' },
-    { id: 2, studentName: 'Sarah Jenkins', studentInitials: 'SJ', bookTitle: 'Visions of Void', date: '2026-03-14', status: 'Approved' },
-    { id: 3, studentName: 'Jayson Butawan', studentInitials: 'JB', bookTitle: 'Angular Masterclass', date: '2026-03-14', status: 'Pending' },
-    { id: 4, studentName: 'Elena Kostas', studentInitials: 'EK', bookTitle: 'Digital Ethics', date: '2026-03-12', status: 'Rejected' },
-  ];
+  // ✅ inject service properly
+  private circulationService = inject(CirculationService);
 
-  openConfirm(request: any) {
+  showConfirm = false;
+  selectedRequest: BorrowRequestDto | null = null;
+
+  borrowRequests: BorrowRequestDto[] = [];
+
+  ngOnInit(): void {
+
+    this.circulationService.getBorrowingHistory().subscribe({
+      next: (res) => {
+        console.log('✅ API Response:', res);
+
+        this.borrowRequests = res.data;
+
+        console.log('📦 Typed Requests:', this.borrowRequests);
+      },
+      error: (err) => {
+        console.error('❌ API Error:', err);
+      }
+    });
+  }
+
+  openConfirm(request: BorrowRequestDto) {
     this.selectedRequest = request;
     this.showConfirm = true;
   }
@@ -39,4 +46,14 @@ export class CirculationComponent {
     }
     this.showConfirm = false;
   }
+
+  getInitials(fullName: string | null): string {
+  if (!fullName) return '';
+
+  return fullName
+    .split(' ')               // split by space
+    .map(n => n[0])           // take first letter of each part
+    .join('')                 // join letters
+    .toUpperCase();           // convert to uppercase
+}
 }
