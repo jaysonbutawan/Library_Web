@@ -7,16 +7,24 @@ import { Book } from '../models/book.model';
 })
 export class BookModalService {
   private modalOpen$ = new BehaviorSubject<boolean>(false);
-  private selectedBook$ = new BehaviorSubject<Book | undefined>(undefined);
+  // ✅ RENAME the private one:
+  private selectedBookSubject$ = new BehaviorSubject<Book | undefined>(undefined);
 
   /**
    * Observable for modal open state
    */
   public isModalOpen$: Observable<boolean> = this.modalOpen$.asObservable();
 
+  /**
+   * Observable for selected book
+   */
+  public selectedBook$: Observable<Book | undefined> = this.selectedBookSubject$.asObservable();
 
+  /**
+   * Open modal for new book
+   */
   openNewBookModal(): void {
-    this.selectedBook$.next(undefined);
+    this.selectedBookSubject$.next(undefined);  // ✅ Update here
     this.modalOpen$.next(true);
   }
 
@@ -24,7 +32,7 @@ export class BookModalService {
    * Open modal to edit existing book
    */
   openEditBookModal(book: Book): void {
-    this.selectedBook$.next(book);
+    this.selectedBookSubject$.next(book);  // ✅ Update here
     this.modalOpen$.next(true);
   }
 
@@ -33,7 +41,6 @@ export class BookModalService {
    */
   closeModal(): void {
     this.modalOpen$.next(false);
-    // Keep selected book for now (will be cleared on open)
   }
 
   /**
@@ -47,13 +54,13 @@ export class BookModalService {
    * Get current selected book
    */
   getSelectedBook(): Book | undefined {
-    return this.selectedBook$.value;
+    return this.selectedBookSubject$.value;  // ✅ Update here
   }
 
   /**
    * Clear selected book
    */
   clearSelectedBook(): void {
-    this.selectedBook$.next(undefined);
+    this.selectedBookSubject$.next(undefined);  // ✅ Update here
   }
 }

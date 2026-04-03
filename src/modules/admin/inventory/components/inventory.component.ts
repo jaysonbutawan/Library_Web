@@ -13,13 +13,14 @@ import { Book, BookFilters } from '../models/book.model';
 import { Category } from '../models/category.model';
 import { BookService } from '../services/book.service';
 import { BookModalService } from '../services/addbook-modal.service';
+import { AddbookModalComponent } from '../components/addbook-modal.component';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule,FormsModule],
-  templateUrl: './inventory.component.html',
+  imports: [CommonModule, FormsModule, AddbookModalComponent],
+  templateUrl: '../pages/inventory.component.html',
 })
 export class InventoryComponent implements OnInit, OnDestroy {
   private bookService = inject(BookService);
@@ -32,12 +33,13 @@ export class InventoryComponent implements OnInit, OnDestroy {
   isLoading = true;
   toastMessage: { text: string; type: 'success' | 'error' } | null = null;
 
-  // Modal state - connected to service
+  // Modal state - Observable streams from service
   isModalOpen$ = this.modalService.isModalOpen$;
-  selectedBook$ = this.modalService.getSelectedBook;
-
+  selectedBook$ = this.modalService.selectedBook$;
+  searchQuery: string = '';
   // Filters
   filters: BookFilters = {
+    search: '',
     status: 'available',
     category: null,
   };
@@ -58,43 +60,67 @@ export class InventoryComponent implements OnInit, OnDestroy {
   /**
    * Load books from API with current filters
    */
-loadBooks(cursor: string | null = null): void {
-  this.isLoading = true;
+  loadBooks(cursor: string | null = null): void {
+    this.isLoading = true;
+    this.cdr.markForCheck();
 
-  this.bookService.getBooks({ ...this.filters, cursor })
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: (response) => {
-        console.log('API Response:', response);  // ← See what's returned
+    this.bookService.getBooks({ ...this.filters, cursor })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          console.log('API Response:', response);
 
-        this.books = response.data || response.data || [];
-        this.nextCursor = response.meta?.next_cursor || null;
-        this.prevCursor = response.meta?.prev_cursor || null;
+          // Handle response - works with both structured and simple array responses
+          if (Array.isArray(response)) {
+            this.books = response;
+            this.nextCursor = null;
+            this.prevCursor = null;
+          } else {
+            // Assume it's an object with data property
+            this.books = response.data || [];
+            this.nextCursor = response.next_cursor || null;
+            this.prevCursor = response.prev_cursor || null;
+          }
 
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      },
-      error: (err) => {
-        console.error('Error:', err);
-        this.showToast('Failed to load books.', 'error');
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      },
-    });
-}
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('Error loading books:', err);
+          this.showToast('Failed to load books.', 'error');
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        },
+      });
+  }
 
   /**
    * Handle search
    */
   onSearch(): void {
+    this.filters = { ...this.filters, search: this.filters.search?.trim() || '' };
+    this.cdr.markForCheck();
     this.loadBooks();
   }
+  onSearchChange(query: string): void {
+    this.filters = { ...this.filters, search: query };
+    this.cdr.markForCheck();
+  }
 
+  /**
+   * Clear search
+   */
+  clearSearch(): void {
+    this.filters = { ...this.filters, search: '' };
+    this.cdr.markForCheck();
+    this.loadBooks();
+  }
   /**
    * Filter books by status
    */
   filterByStatus(status: BookFilters['status']): void {
     this.filters = { ...this.filters, status };
+    this.cdr.markForCheck();
     this.loadBooks();
   }
 
@@ -103,6 +129,7 @@ loadBooks(cursor: string | null = null): void {
    */
   onCategorySelected(category: number | null): void {
     this.filters = { ...this.filters, category };
+    this.cdr.markForCheck();
     this.loadBooks();
   }
 
@@ -111,6 +138,7 @@ loadBooks(cursor: string | null = null): void {
    */
   onCategoryAdded(category: Category): void {
     this.showToast(`Category "${category.name}" added successfully.`, 'success');
+    this.cdr.markForCheck();
   }
 
   /**

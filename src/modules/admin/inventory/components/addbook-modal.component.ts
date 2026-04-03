@@ -1,4 +1,7 @@
-import { Component, Output, EventEmitter, inject, Input, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component, Output, EventEmitter, inject, Input, OnInit, OnDestroy, ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from "@angular/forms";
 import { BookService } from '../services/book.service';
@@ -9,6 +12,7 @@ import { Subject, takeUntil } from 'rxjs';
 @Component({
   selector: "app-addbook-modal",
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: "../pages/addbook-modal.component.html",
 })
@@ -16,6 +20,7 @@ export class AddbookModalComponent implements OnInit, OnDestroy {
   private api = inject(BookService);
   private categoryService = inject(CategoryService);
   private destroy$ = new Subject<void>();
+  private cdr = inject(ChangeDetectorRef);
 
   @Input() editBookData?: Book;
   @Output() close = new EventEmitter<void>();
@@ -40,8 +45,6 @@ export class AddbookModalComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadCategories();
-    this.setupForm();
-    this.watchFormChanges();
   }
 
   ngOnDestroy() {
@@ -58,11 +61,17 @@ export class AddbookModalComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (categories) => {
+          console.log('[CategoryService] raw response:', categories);
           this.categories = categories;
+          console.log('[AddbookModal] this.categories set to:', this.categories);
           this.isLoading = false;
+          this.setupForm();
+          this.watchFormChanges();
+
+          this.cdr.markForCheck();
         },
         error: (err) => {
-          console.error('Failed to load categories:', err);
+          console.error('[AddbookModal] Failed to load categories:', err);
           this.isLoading = false;
           this.errorMessage = 'Failed to load categories';
         }

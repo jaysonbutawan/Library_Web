@@ -27,10 +27,11 @@
     </div>
   }
 
-  @if (isModalOpen) {
+  <!-- Modal with async pipe -->
+  @if (isModalOpen$ | async) {
     <app-addbook-modal
-      [editBookData]="selectedBook"
-      (close)="toggleModal()"
+      [editBookData]="(selectedBook$ | async) ?? undefined"
+      (close)="onModalClose()"
       (bookSaved)="onBookSaved()"
     ></app-addbook-modal>
   }
@@ -45,13 +46,13 @@
         Inventory Monitoring Active
       </span>
       <h1 class="text-6xl font-bold text-white tracking-tight">Book Inventory</h1>
-      <p class="text-slate-400 text-lg mt-2 font-medium">Manage 12,482 encrypted asset records.</p>
+      <p class="text-slate-400 text-lg mt-2 font-medium">Manage your encrypted asset records.</p>
     </div>
     <div class="flex items-center space-x-4">
       <button
         type="button"
         aria-label="add book"
-        (click)="toggleModal()"
+        (click)="openAddBookModal()"
         class="flex items-center space-x-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-600/20 transition-all font-bold text-sm"
       >
         <i class="pi pi-plus"></i>
@@ -61,52 +62,120 @@
   </div>
 
   <!-- Filters -->
-  <div
-    class="bg-white/3 border border-white/10 rounded-3xl p-6 grid grid-cols-12 gap-8 items-center shadow-2xl backdrop-blur-sm"
-  >
-    <div class="col-span-3">
-      <app-category-filter
-        (categorySelected)="onCategorySelected($event)"
-        (categoryAdded)="onCategoryAdded($event)"
-        (error)="showToast($event, 'error')"
-      ></app-category-filter>
-    </div>
+  <div class="bg-[#11141d]/50 border border-white/5 rounded-3xl p-5 grid grid-cols-1 md:grid-cols-12 gap-6 items-end shadow-2xl backdrop-blur-md">
+<div class="md:col-span-7 flex flex-col gap-2">
+  <label for="search-input" class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+    Search
+  </label>
+  <div class="relative group">
+    <!-- Search Icon -->
+    <svg
+      class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
 
-    <div class="col-span-5">
-      <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">
-        Availability Status
-      </label>
-      <div class="bg-white/5 border border-white/10 rounded-xl p-1 flex items-center h-12.5">
-        <button
-          type="button"
-          aria-label="available"
-          (click)="filterByStatus('available')"
-          [class]="
-            filters.status === 'available'
-              ? 'flex-1 h-full rounded-lg bg-indigo-600 text-white text-xs font-bold shadow-lg transition-all'
-              : 'flex-1 h-full rounded-lg text-slate-400 hover:text-white text-xs font-bold transition-all'
-          "
+    <!-- Search Input -->
+    <input
+      id="search-input"
+      type="text"
+      [(ngModel)]="filters.search"
+      (keyup.enter)="onSearch()"
+      (input)="onSearchChange(filters.search!)"
+      placeholder="Search books, authors, ISBN..."
+      class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-11 text-sm text-white placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 outline-none transition-all hover:bg-white/8"
+    />
+
+    <!-- Clear Button (Only show if search has text) -->
+    @if (filters.search) {
+      <button
+        type="button"
+        (click)="clearSearch()"
+        aria-label="clear search"
+        title="Clear search"
+        class="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 hover:bg-red-500/20 rounded-lg transition-colors text-red-400 hover:text-red-300"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-          Available
-        </button>
-        <button
-          type="button"
-          aria-label="filter unavailable books"
-          (click)="filterByStatus('unavailable')"
-          [class]="
-            filters.status === 'unavailable'
-              ? 'flex-1 h-full rounded-lg bg-indigo-600 text-white text-xs font-bold shadow-lg transition-all'
-              : 'flex-1 h-full rounded-lg text-slate-400 hover:text-white text-xs font-bold transition-all'
-          "
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    } @else {
+      <!-- Search Button (Show when search is empty) -->
+      <button
+        type="button"
+        (click)="onSearch()"
+        aria-label="search"
+        title="Search books"
+        class="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 hover:bg-indigo-600/20 rounded-lg transition-colors text-indigo-400 hover:text-indigo-300"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-          Unavailable
-        </button>
-      </div>
-    </div>
-
-    <div class="col-span-1"></div>
-
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      </button>
+    }
   </div>
+</div>
+
+  <div class="md:col-span-5 flex flex-col gap-2">
+    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+      Availability Status
+    </label>
+    <div class="bg-white/5 border border-white/10 rounded-xl p-1 flex items-center h-[50px]">
+      <button
+        type="button"
+        (click)="filterByStatus('available')"
+        [class.bg-indigo-600]="filters.status === 'available'"
+        [class.text-white]="filters.status === 'available'"
+        [class.shadow-lg]="filters.status === 'available'"
+        [class.text-slate-400]="filters.status !== 'available'"
+        class="flex-1 h-full rounded-lg text-xs font-bold transition-all hover:text-white"
+      >
+        Available
+      </button>
+
+      <button
+        type="button"
+        (click)="filterByStatus('unavailable')"
+        [class.bg-indigo-600]="filters.status === 'unavailable'"
+        [class.text-white]="filters.status === 'unavailable'"
+        [class.shadow-lg]="filters.status === 'unavailable'"
+        [class.text-slate-400]="filters.status !== 'unavailable'"
+        class="flex-1 h-full rounded-lg text-xs font-bold transition-all hover:text-white"
+      >
+        Unavailable
+      </button>
+    </div>
+  </div>
+</div>
 
   <div
     class="hidden md:block bg-[#0d0f17] border border-white/5 rounded-4xl overflow-hidden shadow-2xl"
@@ -157,7 +226,9 @@
                     <div class="w-36 h-2 bg-white/10 rounded-full overflow-hidden">
                       <div
                         class="h-full rounded-full transition-all"
-                        [ngClass]="(book?.available_copies ?? 0) > 0 ? 'bg-green-500' : 'bg-amber-500'"
+                        [ngClass]="
+                          (book?.available_copies ?? 0) > 0 ? 'bg-green-500' : 'bg-amber-500'
+                        "
                         [style.width.%]="availabilityPercent(book)"
                       ></div>
                     </div>
@@ -211,8 +282,6 @@
         </tbody>
       </table>
     </div>
-
-
   </div>
 
   <div class="flex items-center justify-between gap-4 pt-4 border-t border-white/5">
@@ -227,7 +296,16 @@
         [disabled]="!prevCursor || isLoading"
         class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-all text-xs font-bold"
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6" /></svg>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+        >
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
         Previous
       </button>
 
@@ -238,7 +316,16 @@
         class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition-all text-xs font-bold"
       >
         Next
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6" /></svg>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+        >
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
       </button>
     </div>
   </div>

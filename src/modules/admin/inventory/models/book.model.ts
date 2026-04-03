@@ -29,9 +29,10 @@ export interface BookFilters {
 
 export interface BookResponse {
   data: Book[];
-  meta: {
-    next_cursor: string | null;
-    prev_cursor: string | null;
-    per_page: number;
-  };
+  path: string;
+  per_page: number;
+  next_cursor: string | null;
+  next_page_url: string | null;
+  prev_cursor: string | null;
+  prev_page_url: string | null;
 }
