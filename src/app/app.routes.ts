@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthLayoutComponent } from '../modules/auth/auth-layout/auth-layout.component';
 import { LayoutComponent } from '../modules/admin/main-layout/layout.components.';
-import { InventoryComponent } from '../modules/admin/inventory/inventory.component';
+import { InventoryComponent } from '../modules/admin/inventory/components/inventory.component';
 import { CirculationComponent } from '../modules/admin/circulations/circulation.component';
 import { StudentsComponent } from '../modules/admin/students/student.component';
 import { StudentDetailComponent } from '../modules/admin/students/student-details/student-detail.component';

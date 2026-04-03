@@ -6,7 +6,7 @@ import { CirculationService } from "./circulation.service";
 @Component({
   selector: "app-circulation",
   standalone: true,
-  imports: [CommonModule], // ❌ remove service here
+  imports: [CommonModule],
   templateUrl: "./circulation.component.html",
 })
 export class CirculationComponent implements OnInit {
