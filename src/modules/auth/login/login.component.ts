@@ -48,7 +48,7 @@ export class LoginComponent {
 
         if (response.success) {
           // Redirect to student dashboard automatically
-          this.router.navigate(['/student/dashboard']);
+          this.router.navigate(['/users']);
           return;
         }
 
@@ -85,7 +85,7 @@ export class LoginComponent {
         this.isLoading = false;
 
         if (response.success) {
-          const destination = type === 'staff' ? '/admin/inventory' : '/student/dashboard';
+          const destination = type === 'staff' ? '/admin' : '/users';
           this.router.navigate([destination]);
           return;
         }

@@ -23,7 +23,7 @@ export interface BookCreateRequest {
 export interface BookFilters {
   cursor?: string | null;
   search?: string;
-  category?: number | null;
+  category?: string | null;
   status?: 'available' | 'borrowed' | 'unavailable' | 'maintenance' | 'all';
 }
 

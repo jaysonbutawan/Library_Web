@@ -1,15 +1,15 @@
 import { Component, HostListener } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { NavBarComponent } from '../navbar/nav-bar.component';
+import { NavbarComponent } from '../navbar/nav-bar.component';
 
 @Component({
     selector: 'admin-layout',
     standalone: true,
-    imports: [CommonModule, RouterOutlet, NavBarComponent],
+    imports: [CommonModule, RouterOutlet, NavbarComponent,RouterModule],
     templateUrl: './main-layout.component.html',
 })
-export class MainLayoutComponent {
+export class UserLayoutComponent {
     isMobileMenuOpen = false;
     private touchStartX = 0;
 

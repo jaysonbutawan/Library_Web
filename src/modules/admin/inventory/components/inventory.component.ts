@@ -9,9 +9,9 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-import { Book, BookFilters } from '../models/book.model';
-import { Category } from '../models/category.model';
-import { BookService } from '../services/book.service';
+import { Book, BookFilters } from '../../../services/models/book.model';
+import { Category } from '../../../services/models/category.model';
+import { BookService } from '../../../services/book.service';
 import { BookModalService } from '../services/addbook-modal.service';
 import { AddbookModalComponent } from '../components/addbook-modal.component';
 
@@ -127,11 +127,11 @@ export class InventoryComponent implements OnInit, OnDestroy {
   /**
    * Handle category selection
    */
-  onCategorySelected(category: number | null): void {
-    this.filters = { ...this.filters, category };
-    this.cdr.markForCheck();
-    this.loadBooks();
-  }
+  // onCategorySelected(category: number | null): void {
+  //   this.filters = { ...this.filters, category };
+  //   this.cdr.markForCheck();
+  //   this.loadBooks();
+  // }
 
   /**
    * Handle new category added
@@ -167,37 +167,37 @@ export class InventoryComponent implements OnInit, OnDestroy {
    * Toggle book availability status
    */
   toggleStatus(book: Book): void {
-  const newStatus = book.status === 'available' ? 'unavailable' : 'available';
+    const newStatus = book.status === 'available' ? 'unavailable' : 'available';
 
-  if (!book.book_id) {
-    this.showToast('Invalid book ID.', 'error');
-    return;
+    if (!book.book_id) {
+      this.showToast('Invalid book ID.', 'error');
+      return;
+    }
+    if (!book.book_id) return;
+
+    this.bookService.updateBook(book.book_id!, { status: newStatus })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          console.log('API Response:', response);
+
+          this.showToast(
+            response?.status || (
+              newStatus === 'available'
+                ? 'Book marked as available.'
+                : 'Book marked as unavailable.'
+            ),
+            'success'
+          );
+
+          this.loadBooks();
+        },
+        error: (err) => {
+          console.error(err);
+          this.showToast(err?.error?.message || 'Failed to update status.', 'error');
+        },
+      });
   }
-  if (!book.book_id) return;
-
-  this.bookService.updateBook(book.book_id!, { status: newStatus })
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: (response) => {
-        console.log('API Response:', response);
-
-        this.showToast(
-          response?.status || (
-            newStatus === 'available'
-              ? 'Book marked as available.'
-              : 'Book marked as unavailable.'
-          ),
-          'success'
-        );
-
-        this.loadBooks();
-      },
-      error: (err) => {
-        console.error(err);
-        this.showToast(err?.error?.message || 'Failed to update status.', 'error');
-      },
-    });
-}
 
   /**
    * Delete book with confirmation

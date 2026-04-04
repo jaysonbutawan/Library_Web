@@ -1,67 +1,202 @@
-<div class="flex min-h-screen bg-[#0b0c12] text-white overflow-x-hidden">
-  <app-nav-bar
-    class="hidden md:flex w-64 h-screen fixed left-0 top-0 shrink-0 z-20"
-  ></app-nav-bar>
-
-  <main class="flex-1 flex flex-col min-w-0 ml-0 md:ml-64 transition-all duration-300">
-    <header
-      class="md:hidden flex h-16 border-b border-white/5 items-center justify-between px-6 bg-[#0d0f17] sticky top-0 z-30"
-    >
-      <button
-        (click)="toggleMobileMenu()"
-        type="button"
-        aria-label="Toggle Button"
-        class="p-2 text-white hover:text-indigo-400 active:scale-95 transition-transform"
+<div
+  class="flex flex-col min-h-screen bg-[#0b0c12] text-white font-sans overflow-x-hidden relative"
+>
+  <!-- Mobile header with hamburger (hidden on md+) -->
+  <header
+    class="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 h-16 bg-[#0d0f17]/80 border-b border-white/5 backdrop-blur-2xl"
+  >
+    <div class="flex items-center gap-3">
+      <div
+        class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center"
       >
         <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="26"
-          height="26"
+          width="16"
+          height="16"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="currentColor"
+          stroke="white"
           stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
         >
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="18" x2="21" y2="18" />
+          <path
+            d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+          />
         </svg>
-      </button>
-    </header>
-    <div class="p-4 md:p-10 lg:p-14">
-      <router-outlet></router-outlet>
+      </div>
+      <span class="font-bold text-white tracking-tight">Library</span>
     </div>
-  </main>
 
+    <button
+      type="button"
+      (click)="toggleMobileMenu()"
+      class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all"
+      aria-label="Open mobile menu"
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+    </button>
+  </header>
+
+  <!-- Desktop navbar (hidden on mobile) -->
+  <div class="hidden md:block">
+    <app-nav-bar></app-nav-bar>
+  </div>
+
+  <main
+    class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 md:pb-12 transition-all duration-300"
+  >
+    <router-outlet></router-outlet>
+  </main>
   @if (isMobileMenuOpen) {
-    <div class="fixed inset-0 z-100 md:hidden">
+    <div class="fixed inset-0 z-[100] md:hidden">
       <div
-        class="absolute inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300"
+        class="absolute inset-0 bg-[#0b0c12]/80 backdrop-blur-md transition-opacity"
         (click)="toggleMobileMenu()"
       ></div>
-
       <div
-        class="absolute inset-y-0 left-0 w-72 bg-[#0d0f17] shadow-2xl animate-in slide-in-from-left duration-300 border-r border-white/5"
+        class="absolute top-4 left-4 right-4 bg-[#131620] border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
       >
-        <button (click)="toggleMobileMenu()" type="button" aria-label="Close menu" class="absolute top-4 right-4 z-50 text-white p-2 border border-indigo-400 rounded-md hover:bg-indigo-400/10 hover:text-indigo-400 transition-colors">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+        <!-- Header -->
+        <div class="p-5 flex justify-between items-center border-b border-white/5">
+          <span class="font-bold text-lg text-white tracking-wide">Menu</span>
+          <button
+            type="button"
+            (click)="toggleMobileMenu()"
+            class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all"
+            aria-label="Close mobile menu"
           >
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-        <app-nav-bar class="w-full h-full"></app-nav-bar>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Nav Links -->
+        <div class="p-3 flex flex-col gap-1">
+          <a
+            [routerLink]="['/users', 'catalog']"
+            routerLinkActive="bg-indigo-500/10 text-indigo-400"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="toggleMobileMenu()"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <path
+                d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+              />
+            </svg>
+            <span class="font-medium">Home</span>
+          </a>
+          <a
+            [routerLink]="['/users', 'borrowed']"
+            routerLinkActive="bg-indigo-500/10 text-indigo-400"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="toggleMobileMenu()"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            <span class="font-medium">Borrowed</span>
+          </a>
+          <a
+            [routerLink]="['/users', 'history']"
+            routerLinkActive="bg-indigo-500/10 text-indigo-400"
+            (click)="toggleMobileMenu()"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <path
+                d="M12 8v4l3 3M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
+              />
+            </svg>
+            <span class="font-medium">History</span>
+          </a>
+        </div>
+
+        <!-- Divider -->
+        <div class="mx-4 border-t border-white/5"></div>
+
+        <!-- Notification + User Menu -->
+        <div class="p-4 flex items-center justify-between">
+          <!-- Notification Bell -->
+          <button
+            aria-label="Notifications"
+            type="button"
+            class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all relative"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span
+              class="absolute top-2.5 right-2.5 w-2 h-2 bg-indigo-500 rounded-full ring-2 ring-[#131620]"
+            ></span>
+          </button>
+
+          <!-- User Menu -->
+          <button
+            aria-label="User Menu"
+            type="button"
+            class="flex items-center gap-3 pl-2 pr-4 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all group"
+          >
+            <div
+              class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-xs font-bold text-white uppercase"
+            >
+              SK
+            </div>
+            <div class="flex flex-col items-start">
+              <span class="text-sm font-medium text-slate-200 group-hover:text-white"
+                >Sarah Kim</span
+              >
+              <span class="text-xs text-slate-500">Student</span>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   }

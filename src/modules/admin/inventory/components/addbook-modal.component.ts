@@ -4,9 +4,9 @@ import {
 } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from "@angular/forms";
-import { BookService } from '../services/book.service';
-import { Book, BookCreateRequest } from '../models/book.model';
-import { CategoryService, Category } from '../services/category.service';
+import { BookService } from '../../../services/book.service';
+import { Book, BookCreateRequest } from '../../../services/models/book.model';
+import { CategoryService, Category } from '../../../services/category.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -224,7 +224,7 @@ export class AddbookModalComponent implements OnInit, OnDestroy {
       ? this.api.updateBook(this.editBookData.book_id, payload)
       : this.api.addBook(payload as BookCreateRequest);
 
-request
+    request
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {

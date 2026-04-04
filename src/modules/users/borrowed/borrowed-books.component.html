@@ -1,0 +1,118 @@
+<div class="min-h-screen bg-[#0b0c12] text-white p-6 md:p-10 font-sans">
+
+  <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-10">
+    <div>
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">My Borrowed Books</h1>
+      <p class="text-slate-400 text-sm md:text-base">
+        Manage your active rentals, track due dates, and settle outstanding fines.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-6 bg-white/[0.03] border border-white/10 rounded-2xl p-4 shadow-lg backdrop-blur-sm">
+      <div class="flex flex-col">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Borrowed</span>
+        <span class="text-2xl font-bold text-white">{{ allBorrowedBooks.length }} <span class="text-sm font-medium text-slate-500">books</span></span>
+      </div>
+      <div class="w-px h-10 bg-white/10"></div>
+      <div class="flex flex-col">
+        <span class="text-xs font-bold text-rose-400 uppercase tracking-wider mb-1">Total Fines</span>
+        <span class="text-2xl font-bold text-rose-400">${{ totalFines | number:'1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3 overflow-x-auto pb-4 mb-8 scrollbar-hide border-b border-white/5">
+    @for (filter of filters; track filter) {
+      <button
+        (click)="applyFilter(filter)"
+        [class]="filter === activeFilter
+          ? 'bg-indigo-600 text-white border-transparent shadow-lg shadow-indigo-500/20'
+          : 'bg-transparent text-slate-400 border-white/10 hover:bg-white/5 hover:text-slate-200'"
+        class="whitespace-nowrap px-5 py-2.5 rounded-xl border text-xs font-bold tracking-wider transition-all duration-300">
+        {{ filter }}
+        @if (filter === 'OVERDUE & FINES' && overdueCount > 0) {
+          <span class="inline-block w-2 h-2 rounded-full bg-rose-500 ml-2 align-middle"></span>
+        }
+      </button>
+    }
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+    @if (displayedBooks.length === 0) {
+      <div class="col-span-full py-20 flex flex-col items-center justify-center text-center border border-dashed border-white/10 rounded-3xl bg-white/[0.02]">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="text-slate-600 mb-4"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <h3 class="text-lg font-bold text-slate-300 mb-1">No books found</h3>
+        <p class="text-slate-500 text-sm">You don't have any books matching this filter.</p>
+      </div>
+    }
+
+    @for (book of displayedBooks; track book.id) {
+      <div class="relative bg-[#13151f] rounded-2xl p-6 border shadow-xl flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+           [ngClass]="book.status === 'OVERDUE' ? 'border-rose-500/30 shadow-rose-500/5' : 'border-white/5'">
+
+        <div class="flex items-start justify-between mb-6">
+          <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-slate-400 shrink-0">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path [attr.d]="book.iconSvg" />
+            </svg>
+          </div>
+
+          <div class="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase"
+               [ngClass]="{
+                 'bg-emerald-500/10 text-emerald-400': book.status === 'ACTIVE',
+                 'bg-amber-500/10 text-amber-400': book.status === 'DUE_SOON',
+                 'bg-rose-500/10 text-rose-400 animate-pulse': book.status === 'OVERDUE'
+               }">
+            <span class="flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full"
+                    [ngClass]="book.status === 'ACTIVE' ? 'bg-emerald-400' : (book.status === 'DUE_SOON' ? 'bg-amber-400' : 'bg-rose-400')"></span>
+              {{ book.status.replace('_', ' ') }}
+            </span>
+          </div>
+        </div>
+
+        <h3 class="font-bold text-lg text-white mb-1 leading-tight line-clamp-1" [title]="book.title">{{ book.title }}</h3>
+        <p class="text-slate-400 text-sm mb-6">{{ book.author }}</p>
+
+        <div class="mt-auto bg-black/40 rounded-xl p-4 border border-white/5">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs text-slate-400 font-medium">Due Date</span>
+            <span class="text-sm font-bold"
+                  [ngClass]="book.status === 'OVERDUE' ? 'text-rose-400' : 'text-slate-200'">
+              {{ book.dueDate | date:'mediumDate' }}
+            </span>
+          </div>
+
+          @if (book.fine > 0) {
+            <div class="flex items-center justify-between pt-3 border-t border-white/5">
+              <span class="text-xs text-rose-400/80 font-bold uppercase tracking-wider">Accumulated Fine</span>
+              <span class="text-base font-bold text-rose-400">${{ book.fine | number:'1.2-2' }}</span>
+            </div>
+          } @else {
+            <div class="flex items-center justify-between pt-3 border-t border-white/5">
+              <span class="text-xs text-slate-500 font-medium">Days Remaining</span>
+              <span class="text-sm font-bold text-emerald-400">{{ getDaysRemaining(book.dueDate) }} Days</span>
+            </div>
+          }
+        </div>
+
+        <div class="flex items-center gap-3 mt-5">
+          @if (book.fine > 0) {
+            <button class="flex-1 py-2.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-colors shadow-lg shadow-rose-500/20">
+              PAY FINE & RETURN
+            </button>
+          } @else {
+            <button class="flex-1 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 text-xs font-bold transition-colors">
+              RENEW
+            </button>
+            <button class="flex-1 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors shadow-lg shadow-indigo-500/20">
+              RETURN
+            </button>
+          }
+        </div>
+
+      </div>
+    }
+  </div>
+</div>

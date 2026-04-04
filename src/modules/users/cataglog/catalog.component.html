@@ -1,0 +1,185 @@
+<div class="min-h-screen bg-[#0b0c14] text-white p-6 md:p-10 font-sans">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1"
+        >Search</label
+      >
+      <div class="relative w-full md:w-72">
+        <svg
+          class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
+          xmlns="http://www.w3.org/2000/svg"
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input
+          type="text"
+          placeholder="Search student or book..."
+          class="w-full bg-[#1a1d26] border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:ring-2 focus:ring-indigo-500/50 transition-all outline-none"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3 overflow-x-auto pb-4 mb-8 scrollbar-hide">
+    @if (isLoading) {
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+        <div
+          class="animate-pulse h-8 rounded-full border border-white/5 bg-white/5"
+          [style.width.px]="[80, 110, 90, 100, 85, 95][i - 1]"
+        ></div>
+      }
+    }
+
+    @if (!isLoading) {
+      @for (category of categories; track category.category_id) {
+        <button
+          (click)="setCategory(category)"
+          [class]="
+            category.category_id === activeCategory?.category_id
+              ? 'bg-[#5b45ff] text-white border-transparent'
+              : 'bg-transparent text-slate-300 border-white/10 hover:bg-white/5'
+          "
+          class="whitespace-nowrap px-5 py-2 rounded-full border text-xs font-bold tracking-wider transition-all"
+        >
+          {{ category.name }}
+        </button>
+      }
+    }
+  </div>
+
+  @if (isLoading) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track i) {
+        <div
+          class="animate-pulse bg-gradient-to-b from-[#3a34a3]/40 to-[#252267]/40 rounded-2xl p-5 flex flex-col border border-white/5 shadow-xl"
+        >
+          <!-- Category badge -->
+          <div class="h-5 w-20 bg-white/10 rounded-full mb-8"></div>
+
+          <!-- Book icon area -->
+          <div class="flex-1 flex justify-center items-center py-6">
+            <div class="w-12 h-12 bg-white/10 rounded-xl"></div>
+          </div>
+
+          <!-- Bottom section -->
+          <div class="mt-auto pt-6 border-t border-white/10">
+            <!-- Title + status -->
+            <div class="flex items-start justify-between gap-2 mb-1">
+              <div class="h-5 w-28 bg-white/10 rounded-lg"></div>
+              <div class="h-3 w-14 bg-white/5 rounded-full mt-1 shrink-0"></div>
+            </div>
+
+            <!-- Author -->
+            <div class="h-3.5 w-20 bg-white/5 rounded-lg mt-2 mb-5"></div>
+
+            <!-- Buttons -->
+            <div class="flex items-center gap-3">
+              <div class="flex-1 h-8 bg-white/5 rounded-lg"></div>
+              <div class="flex-1 h-8 bg-white/10 rounded-lg"></div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Actual Books Grid -->
+  @if (!isLoading) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      @for (book of books; track book.book_id) {
+        <div
+          class="bg-gradient-to-b from-[#3a34a3] to-[#252267] rounded-2xl p-5 flex flex-col border border-white/5 shadow-xl transition-transform hover:-translate-y-1 duration-300"
+        >
+          <div
+            class="self-start px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold tracking-wider uppercase mb-8 backdrop-blur-sm"
+          >
+            {{ book.category?.name }}
+          </div>
+
+          <div class="flex-1 flex justify-center items-center py-6">
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="opacity-40"
+            ></svg>
+          </div>
+
+          <div class="mt-auto pt-6 border-t border-white/10">
+            <div class="flex items-start justify-between gap-2 mb-1">
+              <h3 class="font-bold text-lg truncate" [title]="book.title">{{ book.title }}</h3>
+
+              <div class="flex items-center gap-1.5 shrink-0 mt-1">
+                <span
+                  class="w-1.5 h-1.5 rounded-full"
+                  [ngClass]="getStatus(book) === 'AVAILABLE' ? 'bg-emerald-400' : 'bg-amber-400'"
+                ></span>
+                <span
+                  class="text-[9px] font-bold tracking-wider uppercase"
+                  [ngClass]="
+                    getStatus(book) === 'AVAILABLE' ? 'text-emerald-400' : 'text-amber-400'
+                  "
+                >
+                  {{ getStatus(book) }}
+                </span>
+              </div>
+            </div>
+
+            <p class="text-slate-300 text-sm mb-5 truncate">{{ book.author }}</p>
+
+            <div class="flex items-center gap-3">
+              <button
+                class="flex-1 py-2 text-xs font-bold text-slate-300 hover:text-white transition-colors"
+              >
+                DETAILS
+              </button>
+              <button
+                [ngClass]="
+                  getStatus(book) === 'AVAILABLE'
+                    ? 'bg-[#5b45ff] hover:bg-[#6c58ff] shadow-lg shadow-[#5b45ff]/20'
+                    : 'bg-white/10 text-slate-400 cursor-not-allowed'
+                "
+                class="flex-1 py-2 rounded-lg text-xs font-bold transition-all"
+              >
+                {{ getStatus(book) === 'AVAILABLE' ? 'BORROW' : 'RESERVE' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex items-center justify-between mt-8">
+      <button
+        (click)="prevPage()"
+        [disabled]="!prevCursor || isLoading"
+        class="px-5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-sm font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+      >
+        ← Previous
+      </button>
+
+      <button
+        (click)="nextPage()"
+        [disabled]="!nextCursor || isLoading"
+        class="px-5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-sm font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+      >
+        Next →
+      </button>
+    </div>
+  }
+</div>

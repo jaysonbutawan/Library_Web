@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
     imports: [CommonModule, RouterOutlet, SidebarComponent],
     templateUrl: './layout.components.html',
 })
-export class LayoutComponent {
+export class AdminLayoutComponent {
     isMobileMenuOpen = false;
     private touchStartX = 0;
 
