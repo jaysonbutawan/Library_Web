@@ -167,20 +167,37 @@ export class InventoryComponent implements OnInit, OnDestroy {
    * Toggle book availability status
    */
   toggleStatus(book: Book): void {
-    const newStatus = book.status === 'available' ? 'maintenance' : 'available';
-    this.bookService.updateBook(book.book_id!, { status: newStatus })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.showToast(
-            newStatus === 'available' ? 'Book marked as available.' : 'Book marked as unavailable.',
-            'success'
-          );
-          this.loadBooks();
-        },
-        error: () => this.showToast('Failed to update status.', 'error'),
-      });
+  const newStatus = book.status === 'available' ? 'unavailable' : 'available';
+
+  if (!book.book_id) {
+    this.showToast('Invalid book ID.', 'error');
+    return;
   }
+  if (!book.book_id) return;
+
+  this.bookService.updateBook(book.book_id!, { status: newStatus })
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (response) => {
+        console.log('API Response:', response);
+
+        this.showToast(
+          response?.status || (
+            newStatus === 'available'
+              ? 'Book marked as available.'
+              : 'Book marked as unavailable.'
+          ),
+          'success'
+        );
+
+        this.loadBooks();
+      },
+      error: (err) => {
+        console.error(err);
+        this.showToast(err?.error?.message || 'Failed to update status.', 'error');
+      },
+    });
+}
 
   /**
    * Delete book with confirmation

@@ -224,7 +224,7 @@ export class AddbookModalComponent implements OnInit, OnDestroy {
       ? this.api.updateBook(this.editBookData.book_id, payload)
       : this.api.addBook(payload as BookCreateRequest);
 
-    request
+request
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {

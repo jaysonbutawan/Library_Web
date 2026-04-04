@@ -36,3 +36,8 @@ export interface BookResponse {
   prev_cursor: string | null;
   prev_page_url: string | null;
 }
+
+export interface ApiResponse<T> {
+  message: string;
+  data: T;
+}

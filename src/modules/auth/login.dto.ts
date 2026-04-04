@@ -11,7 +11,15 @@ export interface LoginResponse {
   message?: string;
   data?: {
     token?:       string;
-    user?:        any;
+     user: {
+      id: number;
+      student_id: string;
+      full_name: string;
+      email: string;
+      department: string;
+      status: string;
+      registered_at: string;
+    };
     unavailable?: boolean;
   };
 }

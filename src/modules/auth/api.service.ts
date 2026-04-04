@@ -4,6 +4,7 @@ import { Observable, tap, catchError, throwError } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 import { LoginResponse, RegisterResponse } from './login.dto';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,22 +12,38 @@ export class StaffAuthService {
   private http = inject(HttpClient);
   private readonly API_URL = `${environment.apiUrl}/auth`;
 
-login(credentials: any): Observable<LoginResponse> {
-  return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials).pipe(
+  login(credentials: any): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials).pipe(
+      tap(response => {
+        if (response.success && response.data?.token) {
+          localStorage.setItem('access_token', response.data.token);
+          localStorage.setItem('user_data', JSON.stringify(response.data.user));
+        }
+      }),
+      catchError(error => {
+        // If Laravel returns validation errors, we extract them
+        if (error.status === 422 && error.error.errors) {
+          const firstErrorKey = Object.keys(error.error.errors)[0];
+          const customMsg = error.error.errors[firstErrorKey][0];
+          // Create a new error object that the component can easily read
+          return throwError(() => ({ ...error, customMessage: customMsg }));
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+testLogin(): Observable<LoginResponse> {
+  return this.http.post<LoginResponse>(`${this.API_URL}/test-login`, {}).pipe(
     tap(response => {
+      // ✅ This will now work correctly
       if (response.success && response.data?.token) {
         localStorage.setItem('access_token', response.data.token);
         localStorage.setItem('user_data', JSON.stringify(response.data.user));
       }
     }),
     catchError(error => {
-      // If Laravel returns validation errors, we extract them
-      if (error.status === 422 && error.error.errors) {
-        const firstErrorKey = Object.keys(error.error.errors)[0];
-        const customMsg = error.error.errors[firstErrorKey][0];
-        // Create a new error object that the component can easily read
-        return throwError(() => ({ ...error, customMessage: customMsg }));
-      }
+      console.error('Test login failed', error);
       return throwError(() => error);
     })
   );

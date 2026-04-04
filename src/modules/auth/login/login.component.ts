@@ -19,7 +19,7 @@ export class LoginComponent {
   errorMessage: string | null = null;
   isLoading     = false;
   showPassword  = false;
-  isUnavailable = false; // ← was missing
+  isUnavailable = false;
 
   loginForm = new FormGroup({
     email:    new FormControl('', [Validators.required, Validators.email]),
@@ -27,6 +27,7 @@ export class LoginComponent {
     remember: new FormControl(false),
   });
 
+  // ─── Normal login handlers ──────────────────────────────
   onStudentLogin() {
     this.submit('student');
   }
@@ -35,6 +36,34 @@ export class LoginComponent {
     this.submit('staff');
   }
 
+  // ─── New Test Student Login ────────────────────────────
+  onTestStudentLogin() {
+    this.isLoading     = true;
+    this.errorMessage  = null;
+    this.isUnavailable = false;
+
+    this.authService.testLogin().subscribe({
+      next: (response) => {
+        this.isLoading = false;
+
+        if (response.success) {
+          // Redirect to student dashboard automatically
+          this.router.navigate(['/student/dashboard']);
+          return;
+        }
+
+        this.errorMessage  = response.message ?? 'Test login failed.';
+        this.isUnavailable = response.data?.unavailable ?? false;
+      },
+      error: (err) => {
+        this.isLoading     = false;
+        this.errorMessage  = err.error?.message ?? 'Test login error.';
+        this.isUnavailable = err.error?.data?.unavailable ?? false;
+      }
+    });
+  }
+
+  // ─── Common submit function for normal login ──────────
   private submit(type: 'student' | 'staff') {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
