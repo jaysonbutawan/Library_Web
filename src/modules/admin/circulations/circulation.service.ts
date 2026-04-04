@@ -18,4 +18,18 @@ export class CirculationService {
   );
 }
 
+approveBorrowRequest(requestId: number, pickupDays: number): Observable<void> {
+  return this.http.patch<void>(
+    `${this.API_URL}/requests/${requestId}/approve`,
+    { pickup_days: pickupDays }
+  );
+}
+
+rejectBorrowRequest(requestId: number): Observable<void> {
+  return this.http.patch<void>(
+    `${this.API_URL}/requests/${requestId}/reject`,
+    {}
+  );
+}
+
 }

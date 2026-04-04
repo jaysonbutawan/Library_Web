@@ -21,10 +21,60 @@
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
         <input
+          id="search-input"
           type="text"
-          placeholder="Search student or book..."
+          [(ngModel)]="filters.search"
+          (keyup.enter)="onSearch()"
+          (input)="onSearchChange(filters.search!)"
+          placeholder="Search books, authors, ISBN..."
           class="w-full bg-[#1a1d26] border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:ring-2 focus:ring-indigo-500/50 transition-all outline-none"
         />
+        @if (filters.search) {
+          <button
+            type="button"
+            (click)="clearSearch()"
+            aria-label="clear search"
+            title="Clear search"
+            class="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 hover:bg-red-500/20 rounded-lg transition-colors text-red-400 hover:text-red-300"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        } @else {
+          <!-- Search Button (Show when search is empty) -->
+          <button
+            type="button"
+            (click)="onSearch()"
+            aria-label="search"
+            title="Search books"
+            class="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 hover:bg-indigo-600/20 rounded-lg transition-colors text-indigo-400 hover:text-indigo-300"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
+        }
       </div>
     </div>
   </div>
@@ -92,7 +142,14 @@
     </div>
   }
 
-  <!-- Actual Books Grid -->
+  @if (books.length === 0) {
+    <tr>
+      <td colspan="4" class="px-8 py-16 text-center text-slate-500">
+        <i class="pi pi-inbox text-2xl mb-3 block"></i>
+        <span class="text-xs uppercase tracking-widest">No books found</span>
+      </td>
+    </tr>
+  }
   @if (!isLoading) {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
       @for (book of books; track book.book_id) {
