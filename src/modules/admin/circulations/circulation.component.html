@@ -3,9 +3,36 @@
   <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
     <div>
       <h1 class="text-4xl font-bold text-white tracking-tight">Borrow Requests</h1>
-      <p class="text-slate-400 mt-2 font-medium">
-        Review and manage pending asset transition requests.
-      </p>
+      <button
+       routerLink="/admin/ready-queue"
+        class="relative flex items-center gap-2.5 h-[42px] px-5 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 rounded-xl transition-all duration-200 group mb-[1px]"
+      >
+        <svg
+          class="text-indigo-400 group-hover:scale-110 transition-transform duration-300"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          <circle cx="16" cy="16" r="3"></circle>
+          <polyline points="16 14 16 16 17.5 17.5"></polyline>
+        </svg>
+        <span class="text-sm font-bold text-indigo-100 tracking-wide">Ready for Pickup</span>
+
+        @if (approvedCount > 0) {
+          <span
+            class="absolute -top-2 -right-2 flex h-5.5 w-5.5 items-center justify-center rounded-full bg-indigo-500 text-[11px] font-bold text-white shadow-md ring-4 ring-[#0b0c12]"
+          >
+            {{ approvedCount }}
+          </span>
+        }
+      </button>
     </div>
 
     <div class="flex flex-wrap items-end gap-4">
@@ -59,137 +86,162 @@
   </div>
 
   <!-- ── DESKTOP: Table (hidden on mobile) ── -->
-<div class="hidden md:block bg-[#11141d]/50 border border-white/5 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-md">
-  <div class="overflow-x-auto">
-    <table class="w-full text-left">
-      <thead class="text-[10px] uppercase text-slate-500 tracking-[0.2em] border-b border-white/5 bg-white/2">
-        <tr>
-          <th class="px-8 py-5">Student</th>
-          <th class="px-8 py-5">Book Title</th>
-          <th class="px-8 py-5 text-center">Request Date</th>
-          <th class="px-8 py-5 text-center">Queueing Number</th>
-          <th class="px-8 py-5 text-center">Status</th>
-          <th class="px-8 py-5 text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-white/5 text-sm">
-        @for (request of borrowRequests; track request.request_id) {
-
-          <!-- First-in-queue highlight -->
-          <tr
-            class="transition-colors"
-            [ngClass]="
-              request.queue_position === 1
-                ? 'bg-indigo-500/5 hover:bg-indigo-500/10'
-                : 'hover:bg-white/2'
-            "
-          >
-            <td class="px-8 py-5">
-              <div class="flex items-center gap-3">
-
-                <!-- First-in-queue crown badge -->
-                @if (request.queue_position === 1) {
-                  <div class="relative">
-                    <div class="w-8 h-8 rounded-full bg-linear-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-[10px] font-bold shrink-0 ring-2 ring-indigo-500/40">
+  <div
+    class="hidden md:block bg-[#11141d]/50 border border-white/5 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-md"
+  >
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead
+          class="text-[10px] uppercase text-slate-500 tracking-[0.2em] border-b border-white/5 bg-white/2"
+        >
+          <tr>
+            <th class="px-8 py-5">Student</th>
+            <th class="px-8 py-5">Book Title</th>
+            <th class="px-8 py-5 text-center">Request Date</th>
+            <th class="px-8 py-5 text-center">Queueing Number</th>
+            <th class="px-8 py-5 text-center">Status</th>
+            <th class="px-8 py-5 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-white/5 text-sm">
+          @for (request of pendingRequests; track request.request_id) {
+            <!-- First-in-queue highlight -->
+            <tr
+              class="transition-colors"
+              [ngClass]="
+                request.queue_position === 1
+                  ? 'bg-indigo-500/5 hover:bg-indigo-500/10'
+                  : 'hover:bg-white/2'
+              "
+            >
+              <td class="px-8 py-5">
+                <div class="flex items-center gap-3">
+                  <!-- First-in-queue crown badge -->
+                  @if (request.queue_position === 1) {
+                    <div class="relative">
+                      <div
+                        class="w-8 h-8 rounded-full bg-linear-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-[10px] font-bold shrink-0 ring-2 ring-indigo-500/40"
+                      >
+                        {{ getInitials(request.full_name) }}
+                      </div>
+                      <span class="absolute -top-1.5 -right-1.5 text-[10px]">👑</span>
+                    </div>
+                  } @else {
+                    <div
+                      class="w-8 h-8 rounded-full bg-linear-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-[10px] font-bold shrink-0"
+                    >
                       {{ getInitials(request.full_name) }}
                     </div>
-                    <span class="absolute -top-1.5 -right-1.5 text-[10px]">👑</span>
-                  </div>
-                } @else {
-                  <div class="w-8 h-8 rounded-full bg-linear-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-[10px] font-bold shrink-0">
-                    {{ getInitials(request.full_name) }}
-                  </div>
-                }
+                  }
 
-                <div class="flex flex-col">
-                  <span class="font-bold text-white">{{ request.full_name }}</span>
-                  @if (request.queue_position === 1) {
-                    <span class="text-[10px] text-indigo-400 font-semibold tracking-wide">Next in line</span>
+                  <div class="flex flex-col">
+                    <span class="font-bold text-white">{{ request.full_name }}</span>
+                    @if (request.queue_position === 1) {
+                      <span class="text-[10px] text-indigo-400 font-semibold tracking-wide"
+                        >Next in line</span
+                      >
+                    }
+                  </div>
+                </div>
+              </td>
+
+              <td class="px-8 py-5 text-slate-300 font-medium">{{ request.book?.title }}</td>
+
+              <td class="px-8 py-5 text-center text-slate-500 font-mono text-xs">
+                {{ request.requested_at }}
+              </td>
+
+              <td class="px-8 py-5 text-center">
+                <span
+                  class="font-mono text-xs font-bold"
+                  [ngClass]="request.queue_position === 1 ? 'text-indigo-400' : 'text-slate-500'"
+                >
+                  {{ request.queue_position }}
+                </span>
+              </td>
+
+              <td class="px-8 py-5 text-center">
+                <div class="flex flex-col items-center gap-1.5">
+                  <!-- Status badge -->
+                  <span
+                    [ngClass]="{
+                      'bg-amber-500/10 text-amber-500 border-amber-500/20':
+                        request.status === 'Pending',
+                      'bg-emerald-500/10 text-emerald-500 border-emerald-500/20':
+                        request.status === 'Approved',
+                      'bg-red-500/10 text-red-500 border-red-500/20': request.status === 'Rejected',
+                    }"
+                    class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border"
+                  >
+                    {{ request.status }}
+                  </span>
+
+                  <!-- Countdown for approved requests -->
+                  @if (request.status === 'Approved' && request.expires_at) {
+                    <span
+                      class="text-[10px] font-semibold"
+                      [ngClass]="
+                        request.is_expired
+                          ? 'text-red-400'
+                          : (request.days_remaining ?? 0) <= 1
+                            ? 'text-amber-400'
+                            : 'text-slate-500'
+                      "
+                    >
+                      {{ getCountdown(request) }}
+                    </span>
                   }
                 </div>
-              </div>
-            </td>
+              </td>
 
-            <td class="px-8 py-5 text-slate-300 font-medium">{{ request.book?.title }}</td>
-
-            <td class="px-8 py-5 text-center text-slate-500 font-mono text-xs">
-              {{ request.requested_at }}
-            </td>
-
-            <td class="px-8 py-5 text-center">
-              <span
-                class="font-mono text-xs font-bold"
-                [ngClass]="request.queue_position === 1 ? 'text-indigo-400' : 'text-slate-500'"
-              >
-                {{ request.queue_position }}
-              </span>
-            </td>
-
-            <td class="px-8 py-5 text-center">
-              <div class="flex flex-col items-center gap-1.5">
-
-                <!-- Status badge -->
-                <span
-                  [ngClass]="{
-                    'bg-amber-500/10 text-amber-500 border-amber-500/20': request.status === 'Pending',
-                    'bg-emerald-500/10 text-emerald-500 border-emerald-500/20': request.status === 'Approved',
-                    'bg-red-500/10 text-red-500 border-red-500/20': request.status === 'Rejected',
-                  }"
-                  class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border"
-                >
-                  {{ request.status }}
-                </span>
-
-                <!-- Countdown for approved requests -->
-                @if (request.status === 'Approved' && request.expires_at) {
-                  <span
-                    class="text-[10px] font-semibold"
-                    [ngClass]="
-                      request.is_expired
-                        ? 'text-red-400'
-                        : (request.days_remaining ?? 0) <= 1
-                          ? 'text-amber-400'
-                          : 'text-slate-500'
-                    "
+              <td class="px-8 py-5">
+                <div class="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    (click)="openConfirm(request)"
+                    class="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-green-900/40"
                   >
-                    {{ getCountdown(request) }}
-                  </span>
-                }
-
-              </div>
-            </td>
-
-            <td class="px-8 py-5">
-              <div class="flex justify-end gap-2">
-                <button
-                  type="button"
-                  (click)="openConfirm(request)"
-                  class="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-green-900/40"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  Approve
-                </button>
-                <button
-                  type="button"
-                  (click)="openRejectConfirm(request)"
-                  class="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-900/40"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                  Reject
-                </button>
-              </div>
-            </td>
-
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Approve
+                  </button>
+                  <button
+                    type="button"
+                    (click)="openRejectConfirm(request)"
+                    class="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-900/40"
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                    Reject
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
     <!-- Pagination -->
     <div
       class="p-6 border-t border-white/5 bg-white/1 flex flex-wrap items-center justify-between gap-4"
@@ -228,15 +280,24 @@
     >
       <!-- Icon -->
       <div class="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-6">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#10b981"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <polyline points="20 6 9 17 4 12" />
         </svg>
       </div>
 
       <h3 class="text-2xl font-bold text-white tracking-tight">Confirm Approval</h3>
       <p class="text-slate-400 mt-2 leading-relaxed">
-        Approving <strong class="text-white">{{ selectedRequest?.full_name }}</strong>'s request for
-        <strong class="text-white">"{{ selectedRequest?.book?.title }}"</strong>.
+        Approving <strong class="text-white">{{ selectedRequest?.full_name }}</strong
+        >'s request for <strong class="text-white">"{{ selectedRequest?.book?.title }}"</strong>.
       </p>
 
       <!-- Pickup deadline input -->
@@ -281,8 +342,18 @@
         <!-- Computed expiry date preview -->
         @if (pickupDays && pickupDays > 0) {
           <div class="flex items-center gap-2 text-xs text-slate-400">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
             Expires on
             <span class="text-emerald-400 font-semibold">{{ getExpiryPreview() }}</span>
@@ -323,7 +394,16 @@
       class="relative bg-[#11141d] border border-white/10 w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 animate-in zoom-in-95"
     >
       <div class="w-16 h-16 bg-red-500/20 rounded-2xl flex items-center justify-center mb-6">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#ef4444"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <line x1="18" y1="6" x2="6" y2="18" />
           <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
@@ -331,8 +411,8 @@
       <h3 class="text-2xl font-bold text-white tracking-tight">Confirm Rejection</h3>
       <p class="text-slate-400 mt-2 leading-relaxed">
         Are you sure you want to reject
-        <strong class="text-white">{{ selectedRequest?.full_name }}</strong>'s request for
-        <strong class="text-white">"{{ selectedRequest?.book?.title }}"</strong>?
+        <strong class="text-white">{{ selectedRequest?.full_name }}</strong
+        >'s request for <strong class="text-white">"{{ selectedRequest?.book?.title }}"</strong>?
       </p>
       <div class="mt-8 flex gap-4">
         <button

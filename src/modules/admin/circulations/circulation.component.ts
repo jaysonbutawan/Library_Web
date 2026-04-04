@@ -2,14 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { BorrowRequestDto } from './circulation.dto';
 import { CirculationService } from './circulation.service';
-import { takeUntil ,} from 'rxjs/operators';
+import { takeUntil, } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-circulation',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,RouterLink],
   templateUrl: './circulation.component.html',
 })
 export class CirculationComponent implements OnInit, OnDestroy {
@@ -27,16 +28,14 @@ export class CirculationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadRequests();
   }
-ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-}
+  }
   loadRequests(): void {
     this.circulationService.getBorrowingHistory().subscribe({
       next: (res) => {
-        this.borrowRequests = res.data.filter(
-          (request: any) => request.status !== 'approved'
-        );
+        this.borrowRequests = res.data
         this.cdr.markForCheck();
       },
       error: (err) => {
@@ -44,6 +43,15 @@ ngOnDestroy(): void {
       },
     });
   }
+  get pendingRequests() {
+  // Return an empty array if the data hasn't loaded yet
+  if (!this.borrowRequests) return [];
+
+  // Filter out the approved requests so they don't show in the table
+  return this.borrowRequests.filter(
+    request => request.status.toLowerCase() !== 'approved'
+  );
+}
   getCountdown(request: BorrowRequestDto): string {
     if (request.status !== 'Approved' || !request.expires_at) return '';
     if (request.is_expired) return 'Expired';
@@ -121,6 +129,18 @@ ngOnDestroy(): void {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  get approvedCount(): number {
+    if (!this.borrowRequests) return 0;
+
+    // ✅ Converts to lowercase so 'Approved' and 'approved' both get counted
+    const count = this.borrowRequests.filter(
+      request => request.status.toLowerCase() === 'approved'
+    ).length;
+
+    console.log('Total Approved Requests:', count);
+    return count;
   }
 
   getInitials(fullName: string | null): string {

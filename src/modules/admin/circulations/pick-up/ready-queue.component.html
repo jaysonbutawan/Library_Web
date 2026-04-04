@@ -1,0 +1,80 @@
+<div class="min-h-screen bg-[#06080e] p-8 font-sans text-white flex justify-center items-start">
+
+  <div class="w-full max-w-[1200px] bg-[#0f111a] border border-white/5 rounded-[32px] p-8 shadow-2xl">
+
+    <div class="flex items-center justify-between mb-10">
+      <div class="flex items-center gap-5">
+        <div class="w-14 h-14 rounded-2xl bg-[#1a1d36] flex items-center justify-center text-indigo-400 shadow-inner border border-white/5">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            <circle cx="16" cy="16" r="4"></circle>
+            <polyline points="16 14 16 16 17.5 17.5"></polyline>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-semibold tracking-wide">Ready for Completion</h2>
+      </div>
+
+      <div class="px-4 py-2 rounded-full bg-[#1a1d36] text-indigo-400 text-sm font-bold tracking-wider">
+        {{ pendingRequests.length }} PENDING
+      </div>
+    </div>
+
+    <div class="grid grid-cols-[1.8fr_2.2fr_1fr_1fr_1fr_140px] gap-4 pb-4 border-b border-white/5 text-[11px] font-bold text-slate-500 uppercase tracking-[0.15em] px-4">
+      <div>Student</div>
+      <div>Book Title</div>
+      <div>Request Date</div>
+      <div>Approval Date</div>
+      <div>Status</div>
+      <div class="text-center">Action</div>
+    </div>
+
+    <div class="flex flex-col">
+      @for (request of pendingRequests; track request.id) {
+
+        <div class="grid grid-cols-[1.8fr_2.2fr_1fr_1fr_1fr_140px] gap-4 items-center py-6 px-4 border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors rounded-2xl -mx-4 group">
+
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-[#2a2d3d] flex items-center justify-center text-sm font-bold text-slate-300 shrink-0">
+              {{ request.initials }}
+            </div>
+            <div class="flex flex-col">
+              <span class="text-base font-semibold text-slate-100">{{ request.studentName }}</span>
+              <span class="text-sm text-slate-500 font-medium">ID: {{ request.studentId }}</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 pr-4">
+            <svg class="text-indigo-400 shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+            <span class="text-[15px] font-medium text-slate-200 truncate">{{ request.bookTitle }}</span>
+          </div>
+
+          <div class="text-[15px] font-medium text-slate-400">
+            {{ request.requestDate }}
+          </div>
+          <div class="text-[15px] font-medium text-slate-400">
+            {{ request.approvalDate }}
+          </div>
+
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/10">
+              <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+              <span class="text-xs font-semibold text-emerald-400 tracking-wide">{{ request.status }}</span>
+            </div>
+          </div>
+
+          <div class="text-right">
+            <button class="w-full py-2.5 rounded-xl bg-[#5244e1] hover:bg-[#6052f5] text-white text-sm font-semibold tracking-wide transition-all shadow-[0_4px_20px_-5px_rgba(82,68,225,0.6)] group-hover:shadow-[0_4px_25px_-5px_rgba(82,68,225,0.8)]">
+              Complete Borrow
+            </button>
+          </div>
+
+        </div>
+      }
+    </div>
+
+  </div>
+</div>
